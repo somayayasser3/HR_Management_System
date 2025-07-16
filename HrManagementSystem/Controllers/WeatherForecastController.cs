@@ -29,5 +29,11 @@ namespace HrManagementSystem.Controllers
             })
             .ToArray();
         }
+        [HttpGet("{id}")]
+        public string ggg(int id)
+        {
+
+            return "dsadsadas";
+        }
     }
 }

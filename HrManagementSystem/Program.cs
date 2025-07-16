@@ -1,5 +1,6 @@
 
 using HrManagementSystem.Models;
+using HrManagementSystem.UnitOfWorks;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
@@ -14,7 +15,7 @@ namespace HrManagementSystem
             // Add services to the container.
 
             builder.Services.AddControllers();
-
+            builder.Services.AddScoped < UnitOfWork>();
             builder.Services.AddDbContext<HRContext>(options =>
             options.UseSqlServer(builder.Configuration.GetConnectionString("Con")));
 
@@ -41,6 +42,7 @@ namespace HrManagementSystem
             if (app.Environment.IsDevelopment())
             {
                 app.MapOpenApi();
+                app.UseSwaggerUI(op => op.SwaggerEndpoint("/openapi/v1.json", "v1"));
             }
 
             app.UseHttpsRedirection();
