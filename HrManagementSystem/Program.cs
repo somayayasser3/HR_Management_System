@@ -1,4 +1,5 @@
 
+using HrManagementSystem.Mapping;
 using HrManagementSystem.Models;
 using HrManagementSystem.UnitOfWorks;
 using Microsoft.AspNetCore.Identity;
@@ -18,6 +19,7 @@ namespace HrManagementSystem
             builder.Services.AddScoped < UnitOfWork>();
             builder.Services.AddDbContext<HRContext>(options =>
             options.UseSqlServer(builder.Configuration.GetConnectionString("Con")));
+            builder.Services.AddAutoMapper(typeof(MapConfig));
 
             builder.Services.AddIdentity<User, IdentityRole<int>>(options =>
             {
