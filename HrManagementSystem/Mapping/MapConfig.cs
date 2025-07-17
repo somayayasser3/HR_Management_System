@@ -2,6 +2,9 @@
 using HrManagementSystem.DTOs.Employee;
 using HrManagementSystem.DTOs.OfficialHoliday;
 using HrManagementSystem.DTOs.SystemSettings;
+using HrManagementSystem.DTOs.AttendaceDTOs;
+using HrManagementSystem.DTOs.DepartmentsDTOs;
+using HrManagementSystem.DTOs.SalaryReportsDTOs;
 using HrManagementSystem.Models;
 
 namespace HrManagementSystem.Mapping
@@ -25,6 +28,18 @@ namespace HrManagementSystem.Mapping
             CreateMap<SystemSetting, DisplaySystemSettingsDTO>().ReverseMap();
             CreateMap<OfficialHoliday, OfficialHolidayDisplayDTO>().ReverseMap();
 
+            CreateMap<Department, GetDepartmentsDTO>().ReverseMap();
+            CreateMap<AddNewDepartmentDTO,Department>();
+            CreateMap<UpdateExistingDepartmentDTO,Department>();
+            CreateMap<SalaryReport, GetSalaryReportDTO>().AfterMap((src, dest) =>
+            {
+                dest.EmployeeName = src?.Employee?.FullName;
+            });
+            CreateMap<Attendance, GetAttendaceDTO>().AfterMap((src, dest) =>
+            {
+                dest.EmployeeName = src.Employee.FullName;
+            });
+            CreateMap<Attendance, AddEmpAttendance>().ReverseMap();
         }
     }
     
