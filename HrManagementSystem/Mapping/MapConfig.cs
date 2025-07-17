@@ -2,6 +2,7 @@
 using HrManagementSystem.DTOs.AttendaceDTOs;
 using HrManagementSystem.DTOs.DepartmentsDTOs;
 using HrManagementSystem.DTOs.SalaryReportsDTOs;
+using HrManagementSystem.DTOs.UserGroupsDTOs;
 using HrManagementSystem.Models;
 
 namespace HrManagementSystem.Mapping
@@ -22,6 +23,7 @@ namespace HrManagementSystem.Mapping
                 dest.EmployeeName = src.Employee.FullName;
             });
             CreateMap<Attendance, AddEmpAttendance>().ReverseMap();
+            CreateMap<UserGroup,GetUserGroupsDTO>().ReverseMap();
         }
     }
     
