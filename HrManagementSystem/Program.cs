@@ -4,6 +4,7 @@ using HrManagementSystem.Models;
 using HrManagementSystem.UnitOfWorks;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace HrManagementSystem
 {
@@ -20,6 +21,8 @@ namespace HrManagementSystem
             builder.Services.AddDbContext<HRContext>(options =>
             options.UseSqlServer(builder.Configuration.GetConnectionString("Con")));
             builder.Services.AddAutoMapper(typeof(MapConfig));
+            //builder.Services.AddAutoMapper(typeof(MapConfig).Assembly);
+
 
             builder.Services.AddIdentity<User, IdentityRole<int>>(options =>
             {
