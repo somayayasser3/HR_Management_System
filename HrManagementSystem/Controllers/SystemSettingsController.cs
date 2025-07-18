@@ -2,6 +2,7 @@
 using HrManagementSystem.DTOs.SystemSettings;
 using HrManagementSystem.Models;
 using HrManagementSystem.UnitOfWorks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace HrManagementSystem.Controllers
@@ -9,6 +10,7 @@ namespace HrManagementSystem.Controllers
 
     [ApiController]
     [Route("api/[controller]")]
+    [Authorize]
     public class SystemSettingsController : Controller
     {
 
@@ -23,6 +25,7 @@ namespace HrManagementSystem.Controllers
 
         [HttpGet]
         [EndpointSummary("Get All System Settings")]
+        [Authorize(Roles = "Admin,HR,Employee")]
         public IActionResult GetAllSystemSettings()
         {
             var settings = unit.SystemSettingRepo.getAll();
@@ -32,6 +35,7 @@ namespace HrManagementSystem.Controllers
 
         [HttpGet("{id}")]
         [EndpointSummary("Get specific system settings by ID ")]
+        [Authorize(Roles = "Admin,HR,Employee")]
         public IActionResult GetSystemSettingsById(int id)
         {
             var setting = unit.SystemSettingRepo.getByID(id);
@@ -44,6 +48,7 @@ namespace HrManagementSystem.Controllers
 
         [HttpPost]
         [EndpointSummary("Add new System settings")]
+        [Authorize(Roles = "Admin,HR")]
         public IActionResult AddSystemSetting(DisplaySystemSettingsDTO dto)
         {
             var setting = mapper.Map<SystemSetting>(dto);
@@ -56,6 +61,7 @@ namespace HrManagementSystem.Controllers
 
         [HttpPut("{id}")]
         [EndpointSummary("Edit existing setting by ID ")]
+        [Authorize(Roles = "Admin,HR")]
         public IActionResult EditSystemSetting(int id, DisplaySystemSettingsDTO EditedDTO)
         {
             var existingSetting = unit.SystemSettingRepo.getByID(id);
@@ -73,6 +79,7 @@ namespace HrManagementSystem.Controllers
 
         [HttpDelete("{id}")]
         [EndpointSummary("Delete Existing settings")]
+        [Authorize(Roles = "Admin,HR")]
         public IActionResult DeleteSystemSettings(int id)
         {
             if (id == null)
