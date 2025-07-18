@@ -31,7 +31,7 @@ namespace HrManagementSystem.Controllers
         [EndpointSummary("Get ALl Employees")]
         public IActionResult GetAllEmployees()
         {
-            var employees = unit.EmployeeRepo.getAll();
+            var employees = unit.EmployeeRepo.GetEmployeesandDepartment();
             var mappedEmps = mapper.Map<List<DisplayEmployeeData>>(employees);
             return Ok(mappedEmps);
         }
@@ -40,7 +40,7 @@ namespace HrManagementSystem.Controllers
         [EndpointSummary("Get Employee by ID")]
         public IActionResult GetEmployeeByID( int EmpID)
         {
-            var employee = unit.EmployeeRepo.getByID(EmpID);
+            var employee = unit.EmployeeRepo.GetEmployeeWithDeptBYID(EmpID);
             var mappedEmployee = mapper.Map<DisplayEmployeeData>(employee);
             return Ok(mappedEmployee);
         }
@@ -110,17 +110,16 @@ namespace HrManagementSystem.Controllers
         [HttpPut("{id}")]
         [Authorize(Roles = "HR")]
         [EndpointSummary("Edit Employee/User by ID")]
-
         public async Task<IActionResult> EditEmployeeAsync( int id , AddEmployee Emp)
         {
-            var existingEmployee = unit.EmployeeRepo.getByID(id);
+            var existingEmployee = unit.EmployeeRepo.GetEmployeeWithDeptBYID(id);
             if (existingEmployee == null)
                 return NotFound();
 
             var existingUser = await _userManager.FindByIdAsync(existingEmployee.UserId.ToString());
             if (existingUser == null)
                 return NotFound("Linked User not found");
-
+          
             mapper.Map<AddEmployee, User>(Emp, existingUser);
           
             var userUpdate = await _userManager.UpdateAsync(existingUser);
