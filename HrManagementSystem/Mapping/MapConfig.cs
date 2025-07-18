@@ -5,7 +5,6 @@ using HrManagementSystem.DTOs.SystemSettings;
 using HrManagementSystem.DTOs.AttendaceDTOs;
 using HrManagementSystem.DTOs.DepartmentsDTOs;
 using HrManagementSystem.DTOs.SalaryReportsDTOs;
-using HrManagementSystem.DTOs.UserGroupsDTOs;
 using HrManagementSystem.Models;
 
 namespace HrManagementSystem.Mapping
@@ -21,7 +20,6 @@ namespace HrManagementSystem.Mapping
             CreateMap<AddEmployee, User>()
                .ForMember(dest => dest.UserName, opt => opt.MapFrom(src => src.Email))
                .ForMember(dest => dest.Email, opt => opt.MapFrom(src => src.Email))
-               .ForMember(dest => dest.GroupID, opt => opt.MapFrom(src => src.GroupId))
                .ForMember(dest => dest.CreatedAt, opt => opt.Ignore())
                .ForMember(dest => dest.UpdatedAt, opt => opt.Ignore())
                .ForMember(dest => dest.IsActive, opt => opt.Ignore())
@@ -41,7 +39,6 @@ namespace HrManagementSystem.Mapping
                 dest.EmployeeName = src.Employee.FullName;
             });
             CreateMap<Attendance, AddEmpAttendance>().ReverseMap();
-            CreateMap<UserGroup,GetUserGroupsDTO>().ReverseMap();
         }
     }
     

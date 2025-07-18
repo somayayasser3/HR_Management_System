@@ -4,6 +4,13 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace HrManagementSystem.Models
 {
+
+    public enum UserRole
+    {
+        Admin = 1,
+        Employee = 2,
+        HR = 3
+    }
     public class User : IdentityUser<int>
     {
         [MaxLength(100)]
@@ -19,9 +26,11 @@ namespace HrManagementSystem.Models
         public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
         public bool IsActive { get; set; } = true;
 
-        [ForeignKey("UserGroup")]
-        public int GroupID { get; set; }
-        public virtual UserGroup UserGroup { get; set; }
+        public UserRole Role { get; set; }
+
+        //[ForeignKey("UserGroup")]
+        //public int GroupID { get; set; }
+        // public virtual UserGroup UserGroup { get; set; }
 
         public virtual Employee Employee { get; set; }  // relation with Employee model
     }
