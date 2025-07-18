@@ -13,7 +13,7 @@ namespace HrManagementSystem
         public static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
-
+            string corsText = "Allow Origin";
             // Add services to the container.
 
             builder.Services.AddControllers();
@@ -40,7 +40,16 @@ namespace HrManagementSystem
             //builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection("JwtSettings"));
             // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
             builder.Services.AddOpenApi();
+            builder.Services.AddCors(options =>
+            {
 
+                options.AddPolicy(corsText, builder =>
+                {
+                    builder.AllowAnyOrigin();
+                    builder.AllowAnyMethod();
+                    builder.AllowAnyHeader();
+                });
+            });
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
@@ -51,7 +60,7 @@ namespace HrManagementSystem
             }
 
             app.UseHttpsRedirection();
-
+            app.UseCors(corsText);
             app.UseAuthorization();
 
 

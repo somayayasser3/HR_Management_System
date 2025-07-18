@@ -41,7 +41,7 @@ namespace HrManagementSystem.Controllers
 
         [HttpPost]
         [EndpointSummary("Add Official Holiday")]
-        public IActionResult AddOfficialHoliday( OfficialHolidayDisplayDTO holidayDisplayDTO)
+        public IActionResult AddOfficialHoliday( EditOfficalHolidayDTO holidayDisplayDTO)
         {
             
             var holiday = mapper.Map<OfficialHoliday>(holidayDisplayDTO);
@@ -56,7 +56,7 @@ namespace HrManagementSystem.Controllers
 
         [HttpPut("{id}")]
         [EndpointSummary("Edit an existing Official Holiday")]
-        public IActionResult EditOfficialHoliday(int id, OfficialHolidayDisplayDTO officialHolidayDisplay)
+        public IActionResult EditOfficialHoliday(int id, EditOfficalHolidayDTO officialHolidayDisplay)
         {
             var existingHoliday = unit.OfficialHolidayRepo.getByID(id);
             if (existingHoliday == null)

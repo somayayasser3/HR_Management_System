@@ -31,6 +31,7 @@ namespace HrManagementSystem.Mapping
                .ForMember(dest => dest.Employee, opt => opt.Ignore()); 
             CreateMap<SystemSetting, DisplaySystemSettingsDTO>().ReverseMap();
             CreateMap<OfficialHoliday, OfficialHolidayDisplayDTO>().ReverseMap();
+            CreateMap<OfficialHoliday, EditOfficalHolidayDTO>().ReverseMap();
 
             CreateMap<Department, GetDepartmentsDTO>().ReverseMap();
             CreateMap<AddNewDepartmentDTO,Department>();
