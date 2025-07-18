@@ -19,6 +19,6 @@ namespace HrManagementSystem.Models
 
         // Navigation properties
         public virtual ICollection<GroupPermission> GroupPermissions { get; set; }
-        public virtual ICollection<User> Users { get; set; }
+       // public virtual ICollection<User> Users { get; set; }
     }
 }

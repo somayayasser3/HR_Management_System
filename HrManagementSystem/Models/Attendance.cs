@@ -11,8 +11,16 @@ namespace HrManagementSystem.Models
         [Required]
         public int EmployeeId { get; set; }
 
-        public DateTime CheckInTime { get; set; }
-        public DateTime? CheckOutTime { get; set; }
+        [Required]
+        [Column(TypeName = "date")]
+        public DateTime AttendanceDate { get; set; }
+
+        [Required]
+        [Column(TypeName = "time")]
+        public TimeSpan CheckInTime { get; set; }
+
+        [Column(TypeName = "time")]
+        public TimeSpan? CheckOutTime { get; set; }
 
         [Column(TypeName = "decimal(5,2)")]
         public decimal OvertimeHours { get; set; }
