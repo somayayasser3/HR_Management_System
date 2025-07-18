@@ -14,8 +14,12 @@ namespace HrManagementSystem.Mapping
         public MapConfig()
         {
             // Add your mapping configurations here
-            CreateMap<Employee, DisplayEmployeeData>().ReverseMap();
-            CreateMap<Employee, AddEmployee>().ReverseMap();
+            CreateMap<Employee, DisplayEmployeeData>().AfterMap((src,des) =>
+            {
+                des.DepartmentName = src.Department.DepartmentName;
+            });
+
+            CreateMap<AddEmployee, Employee>().ReverseMap();
 
             CreateMap<AddEmployee, User>()
                .ForMember(dest => dest.UserName, opt => opt.MapFrom(src => src.Email))
@@ -23,7 +27,7 @@ namespace HrManagementSystem.Mapping
                .ForMember(dest => dest.CreatedAt, opt => opt.Ignore())
                .ForMember(dest => dest.UpdatedAt, opt => opt.Ignore())
                .ForMember(dest => dest.IsActive, opt => opt.Ignore())
-               .ForMember(dest => dest.Employee, opt => opt.Ignore()); // avoid circular reference
+               .ForMember(dest => dest.Employee, opt => opt.Ignore()); 
             CreateMap<SystemSetting, DisplaySystemSettingsDTO>().ReverseMap();
             CreateMap<OfficialHoliday, OfficialHolidayDisplayDTO>().ReverseMap();
 

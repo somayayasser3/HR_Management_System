@@ -5,7 +5,6 @@ namespace HrManagementSystem.DTOs.Employee
 {
     public class DisplayEmployeeData
     {
-
         public int EmployeeId { get; set; }
         public string FullName { get; set; }
         public string Address { get; set; }
@@ -15,12 +14,8 @@ namespace HrManagementSystem.DTOs.Employee
         public DateTime HireDate { get; set; }
         public decimal Salary { get; set; }
 
-        public DateTime WorkStartTime { get; set; }
-        public DateTime WorkEndTime { get; set; }
+        public string DepartmentName { get; set; }
 
-       
-        public DateTime CreatedAt { get; set; } 
-        public DateTime UpdatedAt { get; set; } 
 
     }
 }
