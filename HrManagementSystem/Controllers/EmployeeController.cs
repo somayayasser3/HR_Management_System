@@ -38,7 +38,7 @@ namespace HrManagementSystem.Controllers
             var mappedEmployee = mapper.Map<DisplayEmployeeData>(employee);
             return Ok(mappedEmployee);
         }
-        [HttpPut]
+        [HttpPost]
         [EndpointSummary("Add Employee/User ")]
         public async Task<IActionResult> AddEmployeeAsync(AddEmployee Emp)
         {
@@ -59,7 +59,7 @@ namespace HrManagementSystem.Controllers
             return Ok("Employee Added Successfully");
         }
 
-        [HttpPost("{id}")]
+        [HttpPut("{id}")]
         [EndpointSummary("Edit Employee/User by ID")]
 
         public async Task<IActionResult> EditEmployeeAsync( int id , AddEmployee Emp)
