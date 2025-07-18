@@ -17,6 +17,7 @@ namespace HrManagementSystem.Mapping
             CreateMap<Employee, DisplayEmployeeData>().AfterMap((src,des) =>
             {
                 des.DepartmentName = src.Department.DepartmentName;
+                des.Email = src.User.Email;
             });
 
             CreateMap<AddEmployee, Employee>().ReverseMap();
