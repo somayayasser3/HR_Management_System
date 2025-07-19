@@ -8,6 +8,7 @@ namespace HrManagementSystem.DTOs.SalaryReportsDTOs
         public int EmployeeId { get; set; }
         public string EmployeeName { get; set; }
         public int Month { get; set; }
+        public int Year { get; set; }
         public decimal BasicSalary { get; set; }
         public decimal OvertimeAmount { get; set; }
         public decimal DeductionAmount { get; set; }

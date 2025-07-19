@@ -12,6 +12,7 @@ namespace HrManagementSystem.Models
         public int EmployeeId { get; set; }
 
         public int Month { get; set; }
+        public int Year { get; set; }
 
         [Column(TypeName = "decimal(18,2)")]
         public decimal BasicSalary { get; set; }
