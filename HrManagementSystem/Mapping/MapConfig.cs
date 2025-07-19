@@ -47,6 +47,8 @@ namespace HrManagementSystem.Mapping
             });
             CreateMap<Attendance, AddEmpAttendance>().ReverseMap();
             CreateMap<Attendance, UpdateEmployeeAttendance>().ReverseMap();
+            //CreateMap<GetAttendaceDTO, AddEmpAttendance>().ReverseMap();
+            //CreateMap<GetAttendaceDTO, UpdateEmployeeAttendance>().ReverseMap();
         }
     }
     

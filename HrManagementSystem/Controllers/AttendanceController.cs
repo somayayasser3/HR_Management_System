@@ -12,7 +12,7 @@ namespace HrManagementSystem.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize]
+    //[Authorize]
     public class AttendanceController : ControllerBase
     {
         UnitOfWork unit;
@@ -68,7 +68,7 @@ namespace HrManagementSystem.Controllers
 
 
         [HttpPost("new")]
-        [Authorize(Roles = "Admin,HR,Employee")]
+        //[Authorize(Roles = "Admin,HR,Employee")]
         public IActionResult AddAttendanceForEmployee(AddEmpAttendance dto)
         {
 
@@ -88,17 +88,23 @@ namespace HrManagementSystem.Controllers
 
             TimeSpan actualCheckIn = dto.CheckInTime;
             TimeSpan? actualCheckOut = dto.CheckOutTime;
-
+            decimal DelayHours = 0;
+            decimal OvertimeHours = 0;
             if (dto.CheckInTime > requiredCheckIn)
-                dto.DelayHours = (decimal)(actualCheckIn - requiredCheckIn).TotalHours;
+                DelayHours = (decimal)(actualCheckIn - requiredCheckIn).TotalHours;
 
             if (dto.CheckOutTime > requiredCheckOut)
-                dto.OvertimeHours = (decimal)(actualCheckOut - requiredCheckOut)?.TotalHours;
-            dto.UpdatedAt = DateTime.Now;
+                OvertimeHours = (decimal)(actualCheckOut - requiredCheckOut)?.TotalHours;
+          
 
             Attendance newAttendance = mapper.Map<Attendance>(dto);
             try
             {
+                newAttendance.OvertimeHours = OvertimeHours;
+                newAttendance.DelayHours = DelayHours;
+                newAttendance.CreatedAt = DateTime.Now;
+                newAttendance.AttendanceDate = DateTime.Now;
+                newAttendance.UpdatedAt= DateTime.Now;
                 unit.AttendanceRepo.Add(newAttendance);
                 unit.Save();
                 return Ok(new { message = "Attendance added successfully." });
@@ -132,19 +138,24 @@ namespace HrManagementSystem.Controllers
             TimeSpan actualCheckIn = dto.CheckInTime;
             TimeSpan? actualCheckOut = dto.CheckOutTime;
 
+            decimal DelayHours = 0;
+            decimal OvertimeHours = 0;
             if (dto.CheckInTime > requiredCheckIn)
-                dto.DelayHours = (decimal)(actualCheckIn - requiredCheckIn).TotalHours;
+                DelayHours = (decimal)(actualCheckIn - requiredCheckIn).TotalHours;
 
             if (dto.CheckOutTime > requiredCheckOut)
-                dto.OvertimeHours = (decimal)(actualCheckOut - requiredCheckOut)?.TotalHours;
-            dto.UpdatedAt = DateTime.Now;
+                OvertimeHours = (decimal)(actualCheckOut - requiredCheckOut)?.TotalHours;
 
             mapper.Map(dto, AttendanceToUpdate);
             try
             {
+                AttendanceToUpdate.OvertimeHours = OvertimeHours;
+                AttendanceToUpdate.DelayHours = DelayHours;
+                AttendanceToUpdate.UpdatedAt = DateTime.Now;
                 unit.AttendanceRepo.Update(AttendanceToUpdate);
                 unit.Save();
-                return Ok(new { message = "Attendance added successfully." });
+               
+                return Ok(new { Attendance = AttendanceToUpdate });
             }
             catch (Exception ex)
             {
