@@ -34,9 +34,10 @@ namespace HrManagementSystem.Controllers
         public IActionResult GetAttendanceForEmployee(int empid)
         {
             List<GetAttendaceDTO> EmpAttendance = mapper.Map<List<GetAttendaceDTO>>(unit.AttendanceRepo.GetAttendanceForEmployee(empid));
+            if(unit.EmployeeRepo.getByID(empid)==null) return NotFound(new { message = "No such employee" });
             if (EmpAttendance.Count == 0)
             {
-                return NotFound();
+                return NotFound(new {message = "Employee doesn't have any attendance" } );
             }
             return Ok(EmpAttendance);
 
@@ -46,48 +47,102 @@ namespace HrManagementSystem.Controllers
         {
 
             if (dto == null || dto.CheckInTime >= dto.CheckOutTime)
-                return BadRequest("Invalid check-in or check-out time.");
-
+                return BadRequest(new{ message = "Invalid check-in or check-out time." });
+            if (!ModelState.IsValid)
+            {
+                    var errors = ModelState
+                                .Where(ms => ms.Value.Errors.Any())
+                                .SelectMany(ms => ms.Value.Errors)
+                                .Select(e => e.ErrorMessage)
+                                .ToList();
+                return BadRequest(errors);
+            }
             TimeSpan requiredCheckIn = new TimeSpan(8, 0, 0); // 8:00 AM
             TimeSpan requiredCheckOut = new TimeSpan(16, 0, 0); // 4:00 PM
 
-            TimeSpan actualCheckIn = dto.CheckInTime.TimeOfDay;
-            TimeSpan actualCheckOut = dto.CheckOutTime.TimeOfDay;
+            TimeSpan actualCheckIn = dto.CheckInTime;
+            TimeSpan? actualCheckOut = dto.CheckOutTime;
 
-            // Calculate delay & overtime
-            decimal delayHours = 0;
-            decimal overtimeHours = 0;
-
-            if (actualCheckIn > requiredCheckIn)
+            if (dto.CheckInTime > requiredCheckIn)
                 dto.DelayHours= (decimal)(actualCheckIn - requiredCheckIn).TotalHours;
 
-            if (actualCheckOut > requiredCheckOut)
-                dto.OvertimeHours = (decimal)(actualCheckOut - requiredCheckOut).TotalHours;
-
-            dto.CreatedAt = DateTime.Now;
+            if (dto.CheckOutTime > requiredCheckOut)
+                dto.OvertimeHours = (decimal)(actualCheckOut - requiredCheckOut)?.TotalHours;
             dto.UpdatedAt= DateTime.Now;
 
             Attendance newAttendance = mapper.Map<Attendance>(dto);
-            
+            try
+            {
             unit.AttendanceRepo.Add(newAttendance);
             unit.Save();
-            return Ok("Attendance added successfully.");
+            return Ok(new { message = "Attendance added successfully." });
+            }
+            catch(Exception ex)
+            {
+                return BadRequest(new { message = "Try again" });
+            }
+
+        }
+        [HttpPut]
+        public IActionResult UpdateAttendanceForEmployee(UpdateEmployeeAttendance dto)
+        {
+            Attendance AttendanceToUpdate = unit.AttendanceRepo.getByID(dto.AttendanceId);
+
+            if(AttendanceToUpdate==null) return BadRequest(new { message = "No such attendance" });
+            if (dto == null || dto.CheckInTime >= dto.CheckOutTime)
+                return BadRequest(new{ message = "Invalid check-in or check-out time." });
+            if (!ModelState.IsValid)
+            {
+                    var errors = ModelState
+                                .Where(ms => ms.Value.Errors.Any())
+                                .SelectMany(ms => ms.Value.Errors)
+                                .Select(e => e.ErrorMessage)
+                                .ToList();
+                return BadRequest(errors);
+            }
+            TimeSpan requiredCheckIn = new TimeSpan(8, 0, 0); // 8:00 AM
+            TimeSpan requiredCheckOut = new TimeSpan(16, 0, 0); // 4:00 PM
+
+            TimeSpan actualCheckIn = dto.CheckInTime;
+            TimeSpan? actualCheckOut = dto.CheckOutTime;
+
+            if (dto.CheckInTime > requiredCheckIn)
+                dto.DelayHours= (decimal)(actualCheckIn - requiredCheckIn).TotalHours;
+
+            if (dto.CheckOutTime > requiredCheckOut)
+                dto.OvertimeHours = (decimal)(actualCheckOut - requiredCheckOut)?.TotalHours;
+
+            //dto.CreatedAt = DateTime.Now;
+            dto.UpdatedAt= DateTime.Now;
+
+             mapper.Map(dto,AttendanceToUpdate);
+            try
+            {
+            unit.AttendanceRepo.Update(AttendanceToUpdate);
+            unit.Save();
+            return Ok(new { message = "Attendance added successfully." });
+            }
+            catch(Exception ex)
+            {
+                return BadRequest(new { message = "Try again" });
+            }
 
         }
         [HttpDelete("delete/{id}")]
         public IActionResult DeleteAttendanceRow(int id)
         {
+            
             Attendance attendance = unit.AttendanceRepo.getByID(id);
             if(attendance == null)
             {
-                return BadRequest();    
+                return BadRequest(new { message = "Wrong ID" });    
             }
             unit.AttendanceRepo.Delete(id);
             unit.Save();
-            return Ok("Deleted");
+            return Ok(new {message = "Deleted" });
         }
 
-
+        
 
     }
 }
