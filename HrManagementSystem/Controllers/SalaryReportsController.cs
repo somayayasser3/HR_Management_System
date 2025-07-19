@@ -1,9 +1,10 @@
-﻿using HrManagementSystem.UnitOfWorks;
+﻿using AutoMapper;
+using HrManagementSystem.DTOs.SalaryReportsDTOs;
+using HrManagementSystem.Services;
+using HrManagementSystem.UnitOfWorks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using HrManagementSystem.DTOs.SalaryReportsDTOs;
-using AutoMapper;
-using Microsoft.AspNetCore.Authorization;
 
 namespace HrManagementSystem.Controllers
 {
@@ -68,6 +69,16 @@ namespace HrManagementSystem.Controllers
             unit.SalaryReportRepo.Delete(id);
             unit.Save();
             return Ok();    
+        }
+
+        [HttpPost("generate")]
+        [EndpointSummary("Manually generate salary reports for the previous month")]
+        [Authorize(Roles = "Admin,HR")]
+        public async Task<IActionResult> GenerateMonthlySalaryReports(
+    [FromServices] SalaryReportServiceEF salaryReportService)
+        {
+            await salaryReportService.GenerateSalaryReportsAsync();
+            return Ok("Monthly salary reports generated suc cessfully.");
         }
     }
 }
