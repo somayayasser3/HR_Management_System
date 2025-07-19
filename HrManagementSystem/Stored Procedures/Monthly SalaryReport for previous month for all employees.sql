@@ -1,10 +1,17 @@
+USE [HRManagementBD]
+GO
+/****** Object:  StoredProcedure [dbo].[GenerateMonthlySalaryReports]    Script Date: 7/19/2025 7:42:50 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
 -- Create a stored procedure to generate salary reports for all employees
-CREATE or alter PROCEDURE GenerateMonthlySalaryReports
+CREATE OR ALTER PROCEDURE [dbo].[GenerateMonthlySalaryReports]
 AS
 BEGIN
     SET NOCOUNT ON;
     
- -- Variables for current month/year and employee processing
+    -- Variables for current month/year and employee processing
     DECLARE @CurrentMonth INT = MONTH(GETDATE());
     DECLARE @CurrentYear INT = YEAR(GETDATE());
     DECLARE @PreviousMonth INT;
@@ -111,55 +118,3 @@ BEGIN
     CLOSE employee_cursor;
     DEALLOCATE employee_cursor;
 END;
-GO
-
--- Create a SQL Server Agent Job to run this procedure on the 1st of every month
--- Note: This requires SQL Server Agent and appropriate permissions
-
--- Step 1: Create the job
-USE HRManagementBD;
-GO
-
--- Delete job if it exists
-IF EXISTS (SELECT job_id FROM msdb.dbo.sysjobs WHERE name = 'Monthly Salary Report Generation')
-BEGIN
-    EXEC msdb.dbo.sp_delete_job @job_name = 'Monthly Salary Report Generation';
-END;
-GO
-
--- Create the job
-EXEC msdb.dbo.sp_add_job
-    @job_name = 'Monthly Salary Report Generation',
-    @enabled = 1,
-    @description = 'Generates salary reports for all employees on the 1st of each month';
-GO
-
--- Add job step
-EXEC msdb.dbo.sp_add_jobstep
-    @job_name = 'Monthly Salary Report Generation',
-    @step_name = 'Generate Reports',
-    @subsystem = 'TSQL',
-    @command = 'EXEC GenerateMonthlySalaryReports;',
-    @database_name = 'HRManagementBD'; -- Replace with your actual database name
-GO
-
--- Create schedule to run on 1st of every month at 6:00 AM
-EXEC msdb.dbo.sp_add_schedule
-    @schedule_name = 'Monthly on 1st',
-    @freq_type = 4,        -- Monthly
-    @freq_interval = 1,    -- 1st day of month
-    @freq_recurrence_factor = 1,
-    @active_start_time = 060000; -- 6:00 AM
-GO
-
--- Attach schedule to job
-EXEC msdb.dbo.sp_attach_schedule
-    @job_name = 'Monthly Salary Report Generation',
-    @schedule_name = 'Monthly on 1st';
-GO
-
--- Add job to target server
-EXEC msdb.dbo.sp_add_jobserver
-    @job_name = 'Monthly Salary Report Generation',
-    @server_name = @@SERVERNAME;
-GO
