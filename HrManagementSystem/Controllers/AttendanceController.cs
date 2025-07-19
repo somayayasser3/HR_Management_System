@@ -50,7 +50,7 @@ namespace HrManagementSystem.Controllers
         /// ////////////////////////////////////////
 
         [HttpGet("my-attendance")]
-        [Authorize(Roles = "Employee")]
+        [Authorize(Roles = "Employee,HR,Admin")]
         [EndpointSummary("Get current employee's attendance")]
         public IActionResult GetMyAttendance()
         {
@@ -77,24 +77,21 @@ namespace HrManagementSystem.Controllers
             TimeSpan requiredCheckIn = new TimeSpan(8, 0, 0); // 8:00 AM
             TimeSpan requiredCheckOut = new TimeSpan(16, 0, 0); // 4:00 PM
 
-            TimeSpan actualCheckIn = dto.CheckInTime.TimeOfDay;
-            TimeSpan actualCheckOut = dto.CheckOutTime.TimeOfDay;
+            TimeSpan actualCheckIn = dto.CheckInTime;
+            TimeSpan? actualCheckOut = dto.CheckOutTime;
 
             // Calculate delay & overtime
-            decimal delayHours = 0;
-            decimal overtimeHours = 0;
-
             if (actualCheckIn > requiredCheckIn)
-                dto.DelayHours= (decimal)(actualCheckIn - requiredCheckIn).TotalHours;
+                dto.DelayHours = (decimal)(actualCheckIn - requiredCheckIn).TotalHours;
 
-            if (actualCheckOut > requiredCheckOut)
-                dto.OvertimeHours = (decimal)(actualCheckOut - requiredCheckOut).TotalHours;
+            if (actualCheckOut.HasValue && actualCheckOut.Value > requiredCheckOut)
+                dto.OvertimeHours = (decimal)(actualCheckOut.Value - requiredCheckOut).TotalHours;
 
             dto.CreatedAt = DateTime.Now;
-            dto.UpdatedAt= DateTime.Now;
+            dto.UpdatedAt = DateTime.Now;
 
             Attendance newAttendance = mapper.Map<Attendance>(dto);
-            
+
             unit.AttendanceRepo.Add(newAttendance);
             unit.Save();
             return Ok("Attendance added successfully.");
