@@ -2,6 +2,7 @@
 using HrManagementSystem.DTOs.DepartmentsDTOs;
 using HrManagementSystem.Models;
 using HrManagementSystem.UnitOfWorks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -9,6 +10,7 @@ namespace HrManagementSystem.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize(Roles = "Admin,HR")]
     public class DepartmentController : ControllerBase
     {
         UnitOfWork unit;
