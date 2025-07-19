@@ -11,7 +11,6 @@ namespace HrManagementSystem.DTOs.Employee
         public string PhoneNumber { get; set; }
         public string Email { get; set; }
         public string Password { get; set; }
-        public int GroupId { get; set; }
         public string NationalId { get; set; }
         public string Gender { get; set; }
         public DateTime HireDate { get; set; }
@@ -19,8 +18,6 @@ namespace HrManagementSystem.DTOs.Employee
         public DateTime WorkStartTime { get; set; }
         public DateTime WorkEndTime { get; set; }
         public int DepartmentId { get; set; }
-        public DateTime CreatedAt { get; set; }
-        public DateTime UpdatedAt { get; set; }
 
 
     }

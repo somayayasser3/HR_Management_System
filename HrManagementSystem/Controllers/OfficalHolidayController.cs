@@ -2,12 +2,14 @@
 using HrManagementSystem.DTOs.OfficialHoliday;
 using HrManagementSystem.Models;
 using HrManagementSystem.UnitOfWorks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace HrManagementSystem.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
+    [Authorize]
     public class OfficalHolidayController : Controller
     {
         UnitOfWork unit;
@@ -19,6 +21,7 @@ namespace HrManagementSystem.Controllers
         }
 
         [HttpGet]
+        [Authorize(Roles = "Admin,HR,Employee")]
         [EndpointSummary("All Official Holidays")]
         public IActionResult GetAllOfficialHolidays()
         {
@@ -29,6 +32,7 @@ namespace HrManagementSystem.Controllers
 
         [HttpGet("{id}")]
         [EndpointSummary("Get specific  Official Holiday")]
+        [Authorize(Roles = "Admin,HR,Employee")]
         public IActionResult GetOfficialHolidayById(int id)
         {
             var holiday = unit.OfficialHolidayRepo.getByID(id);
@@ -41,6 +45,7 @@ namespace HrManagementSystem.Controllers
 
         [HttpPost]
         [EndpointSummary("Add Official Holiday")]
+        [Authorize(Roles = "HR")]
         public IActionResult AddOfficialHoliday( OfficialHolidayDisplayDTO holidayDisplayDTO)
         {
             
@@ -56,6 +61,7 @@ namespace HrManagementSystem.Controllers
 
         [HttpPut("{id}")]
         [EndpointSummary("Edit an existing Official Holiday")]
+        [Authorize(Roles = "HR")]
         public IActionResult EditOfficialHoliday(int id, OfficialHolidayDisplayDTO officialHolidayDisplay)
         {
             var existingHoliday = unit.OfficialHolidayRepo.getByID(id);
@@ -72,6 +78,7 @@ namespace HrManagementSystem.Controllers
         }
 
         [HttpDelete("{id}")]
+        [Authorize(Roles = "HR")]
         [EndpointSummary("Delete an existing Official Holiday")]
         public IActionResult DeleteOfficialHoliday(int id)
         {
