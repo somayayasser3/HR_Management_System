@@ -44,6 +44,7 @@ namespace HrManagementSystem.Mapping
             CreateMap<Attendance, GetAttendaceDTO>().AfterMap((src, dest) =>
             {
                 dest.EmployeeName = src.Employee.FullName;
+                dest.DepartmentName = src.Employee.Department.DepartmentName;
             });
             CreateMap<Attendance, AddEmpAttendance>().ReverseMap();
             CreateMap<Attendance, UpdateEmployeeAttendance>().ReverseMap();

@@ -23,7 +23,7 @@ namespace HrManagementSystem.Controllers
             mapper = map;
         }
         [HttpGet("all")]
-        [Authorize(Roles = "Admin,HR")]
+        //[Authorize(Roles = "Admin,HR")]
         public IActionResult GetAllAttendance()
         {
             List<GetAttendaceDTO> AllEmpsAttendance = mapper.Map<List<GetAttendaceDTO>>(unit.AttendanceRepo.GetAttendanceWithEmployees());
@@ -35,7 +35,7 @@ namespace HrManagementSystem.Controllers
         }
 
         [HttpGet("employee/{empid}")]
-        [Authorize(Roles = "Admin,HR")]
+        //[Authorize(Roles = "Admin,HR")]
         public IActionResult GetAttendanceForEmployee(int empid)
         {
             List<GetAttendaceDTO> EmpAttendance = mapper.Map<List<GetAttendaceDTO>>(unit.AttendanceRepo.GetAttendanceForEmployee(empid));
@@ -153,9 +153,10 @@ namespace HrManagementSystem.Controllers
                 AttendanceToUpdate.DelayHours = DelayHours;
                 AttendanceToUpdate.UpdatedAt = DateTime.Now;
                 unit.AttendanceRepo.Update(AttendanceToUpdate);
+                GetAttendaceDTO Updated = mapper.Map <GetAttendaceDTO>(unit.AttendanceRepo.GetSingleAttendanceForEmployee(dto.AttendanceId));
                 unit.Save();
                
-                return Ok(new { Attendance = AttendanceToUpdate });
+                return Ok(Updated);
             }
             catch (Exception ex)
             {
@@ -165,7 +166,7 @@ namespace HrManagementSystem.Controllers
 
 
         [HttpDelete("delete/{id}")]
-        [Authorize(Roles = "Admin,HR")]
+        //[Authorize(Roles = "Admin,HR")]
         public IActionResult DeleteAttendanceRow(int id)
         {
             Attendance attendance = unit.AttendanceRepo.getByID(id);
