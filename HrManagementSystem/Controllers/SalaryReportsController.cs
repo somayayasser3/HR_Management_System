@@ -23,7 +23,7 @@ namespace HrManagementSystem.Controllers
 
         [HttpGet("all")]
         [EndpointSummary("Get All salary reports")]
-        [Authorize(Roles = "Admin,HR")]
+        //[Authorize(Roles = "Admin,HR")]
         public IActionResult AllReports() 
         {
             List<GetSalaryReportDTO> AllSalaryReports = mapper.Map<List<GetSalaryReportDTO>>(unit.SalaryReportRepo.GetAllReportsWithEmps()); 
@@ -32,7 +32,7 @@ namespace HrManagementSystem.Controllers
 
         [HttpGet("employee/{empid}/month/{month}")]
         [EndpointSummary("Get salary report for specific employee in a specific month")]
-        [Authorize(Roles = "Admin,HR")]
+        //[Authorize(Roles = "Admin,HR")]
         public IActionResult GetEmployeeSalarReportInMonth(int empid , int month) 
         {
             GetSalaryReportDTO empSalaryReport =  mapper.Map<GetSalaryReportDTO>(unit.SalaryReportRepo.GetSalaryMonthReportWithEmployee(month,empid));
@@ -45,7 +45,7 @@ namespace HrManagementSystem.Controllers
         }
         [HttpGet("employee/{empid}")]
         [EndpointSummary("Get all salary report for specific employee")]
-        [Authorize(Roles = "Admin,HR")]
+        //[Authorize(Roles = "Admin,HR")]
         public IActionResult GetAllReportsForEmployee(int empid ) 
         {
             List<GetSalaryReportDTO> empSalaryReport =  mapper.Map<List<GetSalaryReportDTO>>(unit.SalaryReportRepo.GetAllReportsForEmp(empid));

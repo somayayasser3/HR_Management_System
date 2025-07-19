@@ -14,11 +14,11 @@ namespace HrManagementSystem.Repositories
         }
         public List<SalaryReport> GetAllReportsWithEmps ()
         {
-            return con.SalaryReports.Include(x => x.Employee).ToList();
+            return con.SalaryReports.Include(x => x.Employee).ThenInclude(e => e.Department).ToList();
         }
         public List<SalaryReport> GetAllReportsForEmp (int empid)
         {
-            return con.SalaryReports.Include(x => x.Employee).Where(x=>x.EmployeeId == empid).ToList();
+            return con.SalaryReports.Include(s => s.Employee).ThenInclude(e=>e.Department).Where(x=>x.EmployeeId == empid).ToList();
         }
     }
 }

@@ -40,6 +40,7 @@ namespace HrManagementSystem.Mapping
             {
                 dest.EmployeeName = src?.Employee?.FullName;
                 dest.Year = src.GeneratedAt.Year;
+                dest.DepartmentName = src.Employee.Department.DepartmentName;
             });
             CreateMap<Attendance, GetAttendaceDTO>().AfterMap((src, dest) =>
             {
