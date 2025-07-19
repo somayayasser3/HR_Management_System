@@ -46,6 +46,7 @@ namespace HrManagementSystem.Mapping
                 dest.EmployeeName = src.Employee.FullName;
             });
             CreateMap<Attendance, AddEmpAttendance>().ReverseMap();
+            CreateMap<Attendance, UpdateEmployeeAttendance>().ReverseMap();
         }
     }
     
