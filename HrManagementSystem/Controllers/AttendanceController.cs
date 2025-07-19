@@ -68,7 +68,7 @@ namespace HrManagementSystem.Controllers
 
 
         [HttpPost("new")]
-        [Authorize(Roles = "Admin,HR")]
+        [Authorize(Roles = "Admin,HR,Employee")]
         public IActionResult AddAttendanceForEmployee(AddEmpAttendance dto)
         {
 
