@@ -18,11 +18,11 @@ namespace HrManagementSystem.DTOs.AttendaceDTOs
         [DefaultValue(typeof(TimeSpan), "16:00:00")]
         public TimeSpan? CheckOutTime { get; set; }
 
-        public decimal? OvertimeHours { get; set; }
+        //public decimal? OvertimeHours { get; set; }
 
-        public decimal? DelayHours { get; set; }
+        //public decimal? DelayHours { get; set; }
 
-        public DateTime? CreatedAt { get; set; } = DateTime.UtcNow;
-        public DateTime? UpdatedAt { get; set; } = DateTime.UtcNow;
+        //public DateTime? CreatedAt { get; set; } = DateTime.UtcNow;
+        //public DateTime? UpdatedAt { get; set; } = DateTime.UtcNow;
     }
 }

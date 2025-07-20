@@ -6,4 +6,6 @@ namespace HrManagementSystem.Repositories
     {
         public DepartmentRepository(HRContext context) : base(context){}
     }
+
+
 }
