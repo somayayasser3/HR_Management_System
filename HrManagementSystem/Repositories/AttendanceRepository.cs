@@ -9,11 +9,16 @@ namespace HrManagementSystem.Repositories
 
         public List<Attendance>GetAttendanceWithEmployees()
         {
-            return con.Attendances.Include(x => x.Employee).ToList();
+            return con.Attendances.Include(x => x.Employee).ThenInclude(x=>x.Department).ToList();
         }
         public List<Attendance> GetAttendanceForEmployee(int id)
         {
-            return con.Attendances.Include(x => x.Employee).Where(x=>x.EmployeeId==id).ToList();
+            return con.Attendances.Include(x => x.Employee).ThenInclude(x => x.Department).Where(x=>x.EmployeeId==id).ToList();
         }
+        public Attendance GetSingleAttendanceForEmployee(int id)
+        {
+            return con.Attendances.Include(x => x.Employee).ThenInclude(x => x.Department).FirstOrDefault(x=>x.AttendanceId==id);
+        }
+
     }
 }

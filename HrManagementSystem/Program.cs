@@ -23,6 +23,8 @@ namespace HrManagementSystem
             builder.Services.AddSwaggerGen();
             builder.Services.AddScoped<UnitOfWork>();
             builder.Services.AddScoped<IAuthService, AuthService>();
+            builder.Services.AddScoped<SalaryReportServiceEF>();
+
 
             builder.Services.AddDbContext<HRContext>(options =>
                 options.UseSqlServer(builder.Configuration.GetConnectionString("Con")));

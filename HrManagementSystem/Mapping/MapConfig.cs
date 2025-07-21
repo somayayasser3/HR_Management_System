@@ -39,12 +39,18 @@ namespace HrManagementSystem.Mapping
             CreateMap<SalaryReport, GetSalaryReportDTO>().AfterMap((src, dest) =>
             {
                 dest.EmployeeName = src?.Employee?.FullName;
+                dest.Year = src.GeneratedAt.Year;
+                dest.DepartmentName = src.Employee.Department.DepartmentName;
             });
             CreateMap<Attendance, GetAttendaceDTO>().AfterMap((src, dest) =>
             {
                 dest.EmployeeName = src.Employee.FullName;
+                dest.DepartmentName = src.Employee.Department.DepartmentName;
             });
             CreateMap<Attendance, AddEmpAttendance>().ReverseMap();
+            CreateMap<Attendance, UpdateEmployeeAttendance>().ReverseMap();
+            //CreateMap<GetAttendaceDTO, AddEmpAttendance>().ReverseMap();
+            //CreateMap<GetAttendaceDTO, UpdateEmployeeAttendance>().ReverseMap();
         }
     }
     

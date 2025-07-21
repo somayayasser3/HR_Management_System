@@ -1,18 +1,19 @@
 ﻿using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
 
 namespace HrManagementSystem.DTOs.AttendaceDTOs
 {
-    public class AddEmpAttendance
+    public class UpdateEmployeeAttendance
     {
         [Required]
+        public int AttendanceId { get; set; }
+        [Required]
         public int EmployeeId { get; set; }
-        //[Required]
-        //public DateTime AttendanceDate { get; set; }
+        [Required]
+        public DateTime AttendanceDate { get; set; }
         [Required]
         [DefaultValue(typeof(TimeSpan), "8:00:00")]
-        public TimeSpan CheckInTime { get; set; } 
+        public TimeSpan CheckInTime { get; set; }
         [Required]
         [DefaultValue(typeof(TimeSpan), "16:00:00")]
         public TimeSpan? CheckOutTime { get; set; }
@@ -23,9 +24,5 @@ namespace HrManagementSystem.DTOs.AttendaceDTOs
 
         //public DateTime? CreatedAt { get; set; } = DateTime.UtcNow;
         //public DateTime? UpdatedAt { get; set; } = DateTime.UtcNow;
-
-
-
-
     }
 }
