@@ -83,7 +83,7 @@ namespace HrManagementSystem.Controllers
 
         //////////////////////////////////////////////////////////////
         [HttpPost]
-        [Authorize(Roles = "HR")]
+        //[Authorize(Roles = "HR")]
         [EndpointSummary("Add Employee/User ")]
         public async Task<IActionResult> AddEmployeeAsync(AddEmployee Emp)
         {
@@ -102,7 +102,17 @@ namespace HrManagementSystem.Controllers
             MappedEmployee.CreatedAt = DateTime.UtcNow;
             MappedEmployee.UpdatedAt = DateTime.UtcNow;
 
+            
             unit.EmployeeRepo.Add(MappedEmployee);
+            unit.Save();
+            var leaveBalance = new EmployeeLeaveBalance
+            {
+                EmployeeId = MappedEmployee.EmployeeId,
+                AnnualLeaveBalance = 21,
+                SickLeaveBalance = 15,
+                UnpaidLeaveBalance = 0
+            };
+            unit.EmployeeLeaveBalanceRepo.Add(leaveBalance);
             unit.Save();
             return Ok("Employee Added Successfully");
         }
