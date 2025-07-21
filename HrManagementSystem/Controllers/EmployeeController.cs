@@ -8,12 +8,13 @@ using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace HrManagementSystem.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    [Authorize] // Ensure that only authenticated users can access this controller
+    //[Authorize] // Ensure that only authenticated users can access this controller
     public class EmployeeController : ControllerBase
     {
         UnitOfWork unit;
@@ -38,7 +39,7 @@ namespace HrManagementSystem.Controllers
         [HttpGet("{EmpID}")]
         [Authorize(Roles = "Admin,HR")]
         [EndpointSummary("Get Employee by ID")]
-        public IActionResult GetEmployeeByID( int EmpID)
+        public IActionResult GetEmployeeByID(int EmpID)
         {
             var employee = unit.EmployeeRepo.GetEmployeeWithDeptBYID(EmpID);
             var mappedEmployee = mapper.Map<DisplayEmployeeData>(employee);
@@ -83,7 +84,7 @@ namespace HrManagementSystem.Controllers
 
         //////////////////////////////////////////////////////////////
         [HttpPost]
-        [Authorize(Roles = "HR")]
+        //[Authorize(Roles = "HR")]
         [EndpointSummary("Add Employee/User ")]
         public async Task<IActionResult> AddEmployeeAsync(AddEmployee Emp)
         {
@@ -91,7 +92,7 @@ namespace HrManagementSystem.Controllers
             user.Role = UserRole.Employee; // Set the role to Employee
 
             var AddUser = await _userManager.CreateAsync(user, Emp.Password);
-            
+
             if (!AddUser.Succeeded)
                 return BadRequest(AddUser.Errors);
 
@@ -102,26 +103,71 @@ namespace HrManagementSystem.Controllers
             MappedEmployee.CreatedAt = DateTime.UtcNow;
             MappedEmployee.UpdatedAt = DateTime.UtcNow;
 
+            if (Emp.Image == null || Emp.Image.Length == 0)
+                return BadRequest("No file uploaded.");
+
+            // Generate a unique file name
+            var fileName = Path.GetFileNameWithoutExtension(Emp.Image.FileName);
+            var extension = Path.GetExtension(Emp.Image.FileName);
+            var uniqueFileName = $"{fileName}{extension}";
+
+            // Path to wwwroot/uploads (make sure this folder exists)
+            var uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "uploads");
+            if (!Directory.Exists(uploadsFolder))
+                Directory.CreateDirectory(uploadsFolder);
+            var filePath = Path.Combine(uploadsFolder, uniqueFileName);
+            MappedEmployee.ImagePath = filePath;
             unit.EmployeeRepo.Add(MappedEmployee);
             unit.Save();
+
+            // Save the file
+            using (var stream = new FileStream(filePath, FileMode.Create))
+            {
+                await Emp.Image.CopyToAsync(stream);
+            }
+
+
             return Ok("Employee Added Successfully");
         }
 
         [HttpPut("{id}")]
-        [Authorize(Roles = "HR")]
+        //[Authorize(Roles = "HR")]
         [EndpointSummary("Edit Employee/User by ID")]
-        public async Task<IActionResult> EditEmployeeAsync( int id , AddEmployee Emp)
+        public async Task<IActionResult> EditEmployeeAsync(int id, AddEmployee Emp)
         {
             var existingEmployee = unit.EmployeeRepo.GetEmployeeWithDeptBYID(id);
             if (existingEmployee == null)
                 return NotFound();
 
+
+            if (Emp.Image == null || Emp.Image.Length == 0)
+                return BadRequest("No file uploaded.");
+
+            // Generate a unique file name
+            var fileName = Path.GetFileNameWithoutExtension(Emp.Image.FileName);
+            var extension = Path.GetExtension(Emp.Image.FileName);
+            var uniqueFileName = $"{fileName}{extension}";
+
+            // Path to wwwroot/uploads (make sure this folder exists)
+            var uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "uploads");
+            if (!Directory.Exists(uploadsFolder))
+                Directory.CreateDirectory(uploadsFolder);
+
+            var filePath = Path.Combine(uploadsFolder, uniqueFileName);
+
+            // Save the file
+            using (var stream = new FileStream(filePath, FileMode.Create))
+            {
+                await Emp.Image.CopyToAsync(stream);
+            }
+
+
             var existingUser = await _userManager.FindByIdAsync(existingEmployee.UserId.ToString());
             if (existingUser == null)
                 return NotFound("Linked User not found");
-          
+
             mapper.Map<AddEmployee, User>(Emp, existingUser);
-          
+
             var userUpdate = await _userManager.UpdateAsync(existingUser);
             if (!userUpdate.Succeeded)
                 return BadRequest(userUpdate.Errors);
@@ -156,5 +202,6 @@ namespace HrManagementSystem.Controllers
             // soft delete the user should have the its data still in system 
 
             return Ok(employee);
-        } }
+        }
+    }
 }

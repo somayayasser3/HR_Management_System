@@ -1,4 +1,5 @@
 ﻿using HrManagementSystem.DTOs.AuthDTOs;
+using HrManagementSystem.DTOs.Employee;
 using HrManagementSystem.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -37,9 +38,9 @@ namespace HrManagementSystem.Controllers
         }
 
         [HttpPost("register-hr")]
-        [Authorize(Roles = "Admin")]
+        //[Authorize(Roles = "Admin")]
         [EndpointSummary("Register HR (Admin only)")]
-        public async Task<IActionResult> RegisterHR([FromBody] RegisterHRDTO registerDto)
+        public async Task<IActionResult> RegisterHR([FromBody] AddEmployee registerDto)
         {
             try
             {

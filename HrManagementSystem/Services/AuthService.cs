@@ -1,4 +1,6 @@
-﻿using HrManagementSystem.DTOs.AuthDTOs;
+﻿using AutoMapper;
+using HrManagementSystem.DTOs.AuthDTOs;
+using HrManagementSystem.DTOs.Employee;
 using HrManagementSystem.Models;
 using HrManagementSystem.UnitOfWorks;
 using Microsoft.AspNetCore.Identity;
@@ -16,13 +18,15 @@ namespace HrManagementSystem.Services
         private readonly RoleManager<IdentityRole<int>> _roleManager;
         private readonly JwtSettings _jwtSettings;
         private readonly UnitOfWork _unitOfWork;
+        IMapper mapper;
 
-        public AuthService(UserManager<User> userManager, RoleManager<IdentityRole<int>> roleManager, IOptions<JwtSettings> jwtSettings, UnitOfWork unitOfWork)
+        public AuthService(IMapper m ,UserManager<User> userManager, RoleManager<IdentityRole<int>> roleManager, IOptions<JwtSettings> jwtSettings, UnitOfWork unitOfWork)
         {
             _userManager = userManager;
             _roleManager = roleManager;
             _jwtSettings = jwtSettings.Value;
             _unitOfWork = unitOfWork;
+            mapper = m;
         }
 
         public async Task<AuthResponseDTO> LoginAsync(LoginDTO loginDto)
@@ -54,53 +58,55 @@ namespace HrManagementSystem.Services
             };
         }
 
-        public async Task<AuthResponseDTO> RegisterHRAsync(RegisterHRDTO registerDto)
+        public async Task<AuthResponseDTO> RegisterHRAsync(AddEmployee registerHREmployee)
         {
-            var existingUser = await _userManager.FindByEmailAsync(registerDto.Email);
+            var existingUser = await _userManager.FindByEmailAsync(registerHREmployee.Email);
             if (existingUser != null)
             {
                 throw new InvalidOperationException("User already exists");
             }
 
-            var user = new User
-            {
-                UserName = registerDto.Email,
-                Email = registerDto.Email,
-                FullName = registerDto.FullName,
-                PhoneNumber = registerDto.PhoneNumber,
-                Address = "HR Office", // Default address
-                IsActive = true,
-                CreatedAt = DateTime.UtcNow,
-                UpdatedAt = DateTime.UtcNow,
-                Role = UserRole.HR // Set role to HR
-            };
+            var user = mapper.Map<User>(registerHREmployee);
 
-            var result = await _userManager.CreateAsync(user, registerDto.Password);
+            //{
+            //    UserName = registerDto.Email,
+            //    Email = registerDto.Email,
+            //    FullName = registerDto.FullName,
+            //    PhoneNumber = registerDto.PhoneNumber,
+            //    Address = "HR Office", // Default address
+            user.IsActive = true;
+            user.CreatedAt = DateTime.UtcNow;
+            user.UpdatedAt = DateTime.UtcNow;
+            user.Role = UserRole.HR;
+            //    Role = UserRole.HR // Set role to HR
+            //};
+
+            // Assign HR role
+            var result = await _userManager.CreateAsync(user, registerHREmployee.Password);
             if (!result.Succeeded)
             {
                 throw new InvalidOperationException($"Failed to create user: {string.Join(", ", result.Errors.Select(e => e.Description))}");
             }
-
-            // Assign HR role
             await _userManager.AddToRoleAsync(user, "HR");
 
-            // Create Employee record for HR
+
             var hrEmployee = new Employee
-            {
-                FullName = registerDto.FullName,
-                Address = "HR Office",
-                PhoneNumber = registerDto.PhoneNumber,
-                NationalId = "000000000", // Default value
-                Gender = "Not Specified",
-                HireDate = DateTime.Now,
-                Salary = 0, // Default salary
-                WorkStartTime = DateTime.Today.AddHours(8), // 8 AM
-                WorkEndTime = DateTime.Today.AddHours(16), // 4 PM
-                DepartmentId = 2, // Default department - make sure this exists
-                UserId = user.Id,
-                CreatedAt = DateTime.UtcNow,
-                UpdatedAt = DateTime.UtcNow
-            };
+                        {
+                            FullName = registerHREmployee.FullName,
+                            Address = registerHREmployee.Address,
+                            PhoneNumber = registerHREmployee.PhoneNumber,
+                            NationalId = registerHREmployee.NationalId, // Default value
+                            Gender = registerHREmployee.Gender,
+                            HireDate = DateTime.Now,
+                            Salary = registerHREmployee.Salary, // Default salary
+                            WorkStartTime = DateTime.Today.AddHours(8), // 8 AM
+                            WorkEndTime = DateTime.Today.AddHours(16), // 4 PM
+                            DepartmentId = 2, // Default department - make sure this exists
+                            UserId = user.Id,
+                            CreatedAt = DateTime.UtcNow,
+                            UpdatedAt = DateTime.UtcNow,                            
+
+                        };                       
 
             _unitOfWork.EmployeeRepo.Add(hrEmployee);
             _unitOfWork.Save();
