@@ -20,6 +20,21 @@ namespace HrManagementSystem.Models
         public DbSet<SystemSetting> SystemSettings { get; set; }
         public DbSet<OfficialHoliday> OfficialHolidays { get; set; }
 
+        public async Task GenerateMonthlySalaryReportsAsync()
+        {
+            await Database.ExecuteSqlRawAsync("EXEC GenerateMonthlySalaryReports");
+        }
+        public async Task GenerateMonthlySalaryReportForEmployee(int month , int year , int employeeId)
+        {
+            await Database.ExecuteSqlRawAsync("EXEC GenerateMonthlySalaryReportForEmployee @CurrentMonth = {0}, @CurrentYear = {1}, @EmployeeId = {2}",
+                           month, year, employeeId);
+        }
+        public async Task GenerateMonthlySalaryReportForAllEmployeesInSpecificDate2(int month , int year )
+        {
+            await Database.ExecuteSqlRawAsync("EXEC GenerateMonthlySalaryReportsForAllEmployees @CurrentMonth = {0}, @CurrentYear = {1}",
+                           month, year);
+        }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
@@ -69,5 +84,6 @@ namespace HrManagementSystem.Models
                 .OnDelete(DeleteBehavior.Cascade);
         }
     }
+
 }
 

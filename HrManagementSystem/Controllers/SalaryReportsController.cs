@@ -1,15 +1,16 @@
-﻿using HrManagementSystem.UnitOfWorks;
+﻿using AutoMapper;
+using HrManagementSystem.DTOs.SalaryReportsDTOs;
+using HrManagementSystem.Services;
+using HrManagementSystem.UnitOfWorks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using HrManagementSystem.DTOs.SalaryReportsDTOs;
-using AutoMapper;
-using Microsoft.AspNetCore.Authorization;
 
 namespace HrManagementSystem.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize]
+    //[Authorize]
     public class SalaryReportsController : ControllerBase
     {
         UnitOfWork unit;
@@ -22,7 +23,7 @@ namespace HrManagementSystem.Controllers
 
         [HttpGet("all")]
         [EndpointSummary("Get All salary reports")]
-        [Authorize(Roles = "Admin,HR")]
+        //[Authorize(Roles = "Admin,HR")]
         public IActionResult AllReports() 
         {
             List<GetSalaryReportDTO> AllSalaryReports = mapper.Map<List<GetSalaryReportDTO>>(unit.SalaryReportRepo.GetAllReportsWithEmps()); 
@@ -31,7 +32,7 @@ namespace HrManagementSystem.Controllers
 
         [HttpGet("employee/{empid}/month/{month}")]
         [EndpointSummary("Get salary report for specific employee in a specific month")]
-        [Authorize(Roles = "Admin,HR")]
+        //[Authorize(Roles = "Admin,HR")]
         public IActionResult GetEmployeeSalarReportInMonth(int empid , int month) 
         {
             GetSalaryReportDTO empSalaryReport =  mapper.Map<GetSalaryReportDTO>(unit.SalaryReportRepo.GetSalaryMonthReportWithEmployee(month,empid));
@@ -44,7 +45,7 @@ namespace HrManagementSystem.Controllers
         }
         [HttpGet("employee/{empid}")]
         [EndpointSummary("Get all salary report for specific employee")]
-        [Authorize(Roles = "Admin,HR")]
+        //[Authorize(Roles = "Admin,HR")]
         public IActionResult GetAllReportsForEmployee(int empid ) 
         {
             List<GetSalaryReportDTO> empSalaryReport =  mapper.Map<List<GetSalaryReportDTO>>(unit.SalaryReportRepo.GetAllReportsForEmp(empid));
@@ -68,6 +69,36 @@ namespace HrManagementSystem.Controllers
             unit.SalaryReportRepo.Delete(id);
             unit.Save();
             return Ok();    
+        }
+
+        [HttpPost("generate")]
+        [EndpointSummary("Manually generate salary reports for the previous month")]
+        //[Authorize(Roles = "Admin,HR")]
+        public async Task<IActionResult> GenerateMonthlySalaryReports(
+         [FromServices] SalaryReportServiceEF salaryReportService)
+        {
+            await salaryReportService.GenerateSalaryReportsAsync();
+            return Ok("Monthly salary reports generated suc cessfully.");
+        }
+
+        [HttpPost("generateEMP")]
+        [EndpointSummary("Manually generate salary reports for Employee in specific month and year")]
+        //[Authorize(Roles = "Admin,HR")]
+        public async Task<IActionResult> GenerateMonthlySalaryReportForEmployee(
+         [FromServices] SalaryReportServiceEF salaryReportService , int m,int y , int id)
+        {
+            await salaryReportService.GenerateMonthlySalaryReportForEmployee(m,y,id);
+            return Ok("Monthly salary reports generated suc cessfully.");
+        }
+
+
+        [HttpPost("generateAll")]
+        [EndpointSummary("Manually generate salary reports for all employees in specific month and year")]
+        public async Task<IActionResult> GenerateMonthlySalaryReportForAllEmployeesInSpecificDate(
+         [FromServices] SalaryReportServiceEF salaryReportService, int m, int y)
+        {
+            await salaryReportService.GenerateMonthlySalaryReportForAllEmployeesInSpecificDate22(m, y);
+            return Ok("Monthly salary reports generated suc cessfully.");
         }
     }
 }
