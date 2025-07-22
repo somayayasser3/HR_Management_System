@@ -21,8 +21,15 @@ namespace HrManagementSystem.Controllers
             this.mapper = mapper;
         }
 
+        [HttpGet("types")]
+        public IActionResult GetAllLeaveTypes()
+        {
+            var types = unit.LeaveRepo.GetAllTypes();
+            return Ok(types);
+        }
+
         // for HR view all Req (pending - approved - rejected)
-        [HttpGet]
+        [HttpGet("requests")]
         public IActionResult GetAllRequests()
         {
             var Requests = unit.LeaveRepo.GetAllRequests();

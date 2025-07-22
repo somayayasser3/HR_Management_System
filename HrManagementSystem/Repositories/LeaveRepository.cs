@@ -16,6 +16,11 @@ namespace HrManagementSystem.Repositories
                 .Include(l => l.LeaveType)
                 .ToList();
         }
+
+        public List<LeaveType> GetAllTypes()
+        {
+            return con.LeaveTypes.ToList();
+        }
         public LeaveRequest GetRequestByID(int id)
         {
             return con.LeaveRequests
