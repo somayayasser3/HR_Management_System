@@ -8,8 +8,8 @@ namespace HrManagementSystem.Models
     public enum UserRole
     {
         Admin = 1,
-        Employee = 2,
-        HR = 3
+        HR = 2,
+        Employee = 3
     }
     public class User : IdentityUser<int>
     {
