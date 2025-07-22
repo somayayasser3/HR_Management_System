@@ -51,7 +51,10 @@ namespace HrManagementSystem.Models
 
         [ForeignKey("DepartmentId")]
         public virtual Department Department { get; set; }
+
         public string ImagePath { get; set; }
+
+        public EmployeeLeaveBalance LeaveBalance { get; set; }
 
         public virtual ICollection<Attendance> Attendances { get; set; }
     }

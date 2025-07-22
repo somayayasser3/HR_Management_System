@@ -4,6 +4,7 @@ using HrManagementSystem.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace HrManagementSystem.Migrations
 {
     [DbContext(typeof(HRContext))]
-    partial class HRContextModelSnapshot : ModelSnapshot
+    [Migration("20250721155802_AddEmployeeLeaveBalanceTable")]
+    partial class AddEmployeeLeaveBalanceTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -121,10 +124,6 @@ namespace HrManagementSystem.Migrations
 
                     b.Property<DateTime>("HireDate")
                         .HasColumnType("datetime2");
-
-                    b.Property<string>("ImagePath")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("NationalId")
                         .IsRequired()
@@ -253,26 +252,6 @@ namespace HrManagementSystem.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("LeaveTypes");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            MaxDaysPerYear = 21,
-                            Name = "Annual"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            MaxDaysPerYear = 15,
-                            Name = "Sick"
-                        },
-                        new
-                        {
-                            Id = 3,
-                            MaxDaysPerYear = 0,
-                            Name = "Unpaid"
-                        });
                 });
 
             modelBuilder.Entity("HrManagementSystem.Models.OfficialHoliday", b =>

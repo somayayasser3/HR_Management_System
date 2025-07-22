@@ -103,6 +103,7 @@ namespace HrManagementSystem.Controllers
             MappedEmployee.CreatedAt = DateTime.UtcNow;
             MappedEmployee.UpdatedAt = DateTime.UtcNow;
 
+
             if (Emp.Image == null || Emp.Image.Length == 0)
                 return BadRequest("No file uploaded.");
 
@@ -125,8 +126,18 @@ namespace HrManagementSystem.Controllers
             {
                 await Emp.Image.CopyToAsync(stream);
             }
-
-
+            
+            unit.EmployeeRepo.Add(MappedEmployee);
+            unit.Save();
+            var leaveBalance = new EmployeeLeaveBalance
+            {
+                EmployeeId = MappedEmployee.EmployeeId,
+                AnnualLeaveBalance = 21,
+                SickLeaveBalance = 15,
+                UnpaidLeaveBalance = 0
+            };
+            unit.EmployeeLeaveBalanceRepo.Add(leaveBalance);
+            unit.Save();
             return Ok("Employee Added Successfully");
         }
 
