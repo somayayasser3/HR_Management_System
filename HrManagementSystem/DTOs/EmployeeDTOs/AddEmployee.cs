@@ -19,6 +19,8 @@ namespace HrManagementSystem.DTOs.Employee
         public DateTime WorkEndTime { get; set; }
         public int DepartmentId { get; set; }
 
+        public IFormFile Image { get; set; }
+
 
     }
 }

@@ -4,6 +4,7 @@ using HrManagementSystem.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace HrManagementSystem.Migrations
 {
     [DbContext(typeof(HRContext))]
-    partial class HRContextModelSnapshot : ModelSnapshot
+    [Migration("20250721205823_AddImagePathForEmployee")]
+    partial class AddImagePathForEmployee
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -161,25 +164,6 @@ namespace HrManagementSystem.Migrations
                     b.ToTable("Employees");
                 });
 
-            modelBuilder.Entity("HrManagementSystem.Models.EmployeeLeaveBalance", b =>
-                {
-                    b.Property<int>("EmployeeId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("AnnualLeaveBalance")
-                        .HasColumnType("int");
-
-                    b.Property<int>("SickLeaveBalance")
-                        .HasColumnType("int");
-
-                    b.Property<int>("UnpaidLeaveBalance")
-                        .HasColumnType("int");
-
-                    b.HasKey("EmployeeId");
-
-                    b.ToTable("EmployeeLeaveBalances");
-                });
-
             modelBuilder.Entity("HrManagementSystem.Models.GroupPermission", b =>
                 {
                     b.Property<int>("GroupId")
@@ -193,86 +177,6 @@ namespace HrManagementSystem.Migrations
                     b.HasIndex("PermissionId");
 
                     b.ToTable("GroupPermissions");
-                });
-
-            modelBuilder.Entity("HrManagementSystem.Models.LeaveRequest", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("EmployeeId")
-                        .HasColumnType("int");
-
-                    b.Property<DateOnly>("EndDate")
-                        .HasColumnType("date");
-
-                    b.Property<int>("LeaveTypeId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Reason")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime>("RequestedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateOnly>("StartDate")
-                        .HasColumnType("date");
-
-                    b.Property<string>("Status")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("EmployeeId");
-
-                    b.HasIndex("LeaveTypeId");
-
-                    b.ToTable("LeaveRequests");
-                });
-
-            modelBuilder.Entity("HrManagementSystem.Models.LeaveType", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("MaxDaysPerYear")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("LeaveTypes");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            MaxDaysPerYear = 21,
-                            Name = "Annual"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            MaxDaysPerYear = 15,
-                            Name = "Sick"
-                        },
-                        new
-                        {
-                            Id = 3,
-                            MaxDaysPerYear = 0,
-                            Name = "Unpaid"
-                        });
                 });
 
             modelBuilder.Entity("HrManagementSystem.Models.OfficialHoliday", b =>
@@ -700,17 +604,6 @@ namespace HrManagementSystem.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("HrManagementSystem.Models.EmployeeLeaveBalance", b =>
-                {
-                    b.HasOne("HrManagementSystem.Models.Employee", "Employee")
-                        .WithOne("LeaveBalance")
-                        .HasForeignKey("HrManagementSystem.Models.EmployeeLeaveBalance", "EmployeeId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Employee");
-                });
-
             modelBuilder.Entity("HrManagementSystem.Models.GroupPermission", b =>
                 {
                     b.HasOne("HrManagementSystem.Models.UserGroup", "UserGroup")
@@ -728,25 +621,6 @@ namespace HrManagementSystem.Migrations
                     b.Navigation("Permission");
 
                     b.Navigation("UserGroup");
-                });
-
-            modelBuilder.Entity("HrManagementSystem.Models.LeaveRequest", b =>
-                {
-                    b.HasOne("HrManagementSystem.Models.Employee", "Employee")
-                        .WithMany()
-                        .HasForeignKey("EmployeeId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("HrManagementSystem.Models.LeaveType", "LeaveType")
-                        .WithMany()
-                        .HasForeignKey("LeaveTypeId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Employee");
-
-                    b.Navigation("LeaveType");
                 });
 
             modelBuilder.Entity("HrManagementSystem.Models.SalaryReport", b =>
@@ -819,9 +693,6 @@ namespace HrManagementSystem.Migrations
             modelBuilder.Entity("HrManagementSystem.Models.Employee", b =>
                 {
                     b.Navigation("Attendances");
-
-                    b.Navigation("LeaveBalance")
-                        .IsRequired();
                 });
 
             modelBuilder.Entity("HrManagementSystem.Models.Permission", b =>

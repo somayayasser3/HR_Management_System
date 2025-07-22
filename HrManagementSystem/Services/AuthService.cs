@@ -1,4 +1,6 @@
-﻿using HrManagementSystem.DTOs.AuthDTOs;
+﻿using AutoMapper;
+using HrManagementSystem.DTOs.AuthDTOs;
+using HrManagementSystem.DTOs.Employee;
 using HrManagementSystem.Models;
 using HrManagementSystem.UnitOfWorks;
 using Microsoft.AspNetCore.Identity;
@@ -16,13 +18,15 @@ namespace HrManagementSystem.Services
         private readonly RoleManager<IdentityRole<int>> _roleManager;
         private readonly JwtSettings _jwtSettings;
         private readonly UnitOfWork _unitOfWork;
+        IMapper mapper;
 
-        public AuthService(UserManager<User> userManager, RoleManager<IdentityRole<int>> roleManager, IOptions<JwtSettings> jwtSettings, UnitOfWork unitOfWork)
+        public AuthService(IMapper m, UserManager<User> userManager, RoleManager<IdentityRole<int>> roleManager, IOptions<JwtSettings> jwtSettings, UnitOfWork unitOfWork)
         {
             _userManager = userManager;
             _roleManager = roleManager;
             _jwtSettings = jwtSettings.Value;
             _unitOfWork = unitOfWork;
+            mapper = m;
         }
 
         public async Task<AuthResponseDTO> LoginAsync(LoginDTO loginDto)
@@ -54,54 +58,55 @@ namespace HrManagementSystem.Services
             };
         }
 
-        public async Task<AuthResponseDTO> RegisterHRAsync(RegisterHRDTO registerDto)
+        public async Task<AuthResponseDTO> RegisterHRAsync(AddEmployee registerHREmployee)
         {
-            var existingUser = await _userManager.FindByEmailAsync(registerDto.Email);
+            var existingUser = await _userManager.FindByEmailAsync(registerHREmployee.Email);
             if (existingUser != null)
             {
                 throw new InvalidOperationException("User already exists");
             }
 
-            var user = new User
-            {
-                UserName = registerDto.Email,
-                Email = registerDto.Email,
-                FullName = registerDto.FullName,
-                PhoneNumber = registerDto.PhoneNumber,
-                Address = "HR Office", // Default address
-                IsActive = true,
-                CreatedAt = DateTime.UtcNow,
-                UpdatedAt = DateTime.UtcNow,
-                Role = UserRole.HR // Set role to HR
-            };
+            var user = mapper.Map<User>(registerHREmployee);
+            user.IsActive = true;
+            user.CreatedAt = DateTime.UtcNow;
+            user.UpdatedAt = DateTime.UtcNow;
+            user.Role = UserRole.HR;
+            var result = await _userManager.CreateAsync(user, registerHREmployee.Password);
+            await _userManager.AddToRoleAsync(user, (UserRole.HR).ToString());
 
-            var result = await _userManager.CreateAsync(user, registerDto.Password);
             if (!result.Succeeded)
             {
                 throw new InvalidOperationException($"Failed to create user: {string.Join(", ", result.Errors.Select(e => e.Description))}");
             }
 
-            // Assign HR role
-            await _userManager.AddToRoleAsync(user, "HR");
 
-            // Create Employee record for HR
-            var hrEmployee = new Employee
+            var hrEmployee = mapper.Map<Employee>(registerHREmployee);
+            hrEmployee.UserId = user.Id;
+            hrEmployee.CreatedAt = DateTime.UtcNow;
+            hrEmployee.UpdatedAt = DateTime.UtcNow;
+
+            if (registerHREmployee.Image == null || registerHREmployee.Image.Length == 0)
+                throw new InvalidOperationException("Image not sent");
+
+            // Generate a unique file name
+            var fileName = registerHREmployee.NationalId;
+            var extension = Path.GetExtension(registerHREmployee.Image.FileName);
+            var uniqueFileName = $"{fileName}{extension}";
+
+            // Path to wwwroot/uploads (make sure this folder exists)
+            var uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "uploads");
+            if (!Directory.Exists(uploadsFolder))
+                Directory.CreateDirectory(uploadsFolder);
+
+            var filePath = Path.Combine(uploadsFolder, uniqueFileName);
+
+            // Save the file
+            using (var stream = new FileStream(filePath, FileMode.Create))
             {
-                FullName = registerDto.FullName,
-                Address = "HR Office",
-                PhoneNumber = registerDto.PhoneNumber,
-                NationalId = "000000000", // Default value
-                Gender = "Not Specified",
-                HireDate = DateTime.Now,
-                Salary = 0, // Default salary
-                WorkStartTime = DateTime.Today.AddHours(8), // 8 AM
-                WorkEndTime = DateTime.Today.AddHours(16), // 4 PM
-                DepartmentId = 2, // Default department - make sure this exists
-                UserId = user.Id,
-                CreatedAt = DateTime.UtcNow,
-                UpdatedAt = DateTime.UtcNow
-            };
+                await registerHREmployee.Image.CopyToAsync(stream);
+            }
 
+            hrEmployee.ImagePath = filePath;
             _unitOfWork.EmployeeRepo.Add(hrEmployee);
             _unitOfWork.Save();
 
