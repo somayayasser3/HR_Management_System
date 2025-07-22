@@ -42,10 +42,11 @@ namespace HrManagementSystem.Services
             {
                 throw new UnauthorizedAccessException("Invalid credentials");
             }
-            var e = _unitOfWork.EmployeeRepo.GetEmployeeByUserId(user.Id);
 
             var roles = await _userManager.GetRolesAsync(user);
             var role = roles.FirstOrDefault() ?? "Employee";
+            
+            var e = _unitOfWork.EmployeeRepo.GetEmployeeByUserId(user.Id);
 
             var token = GenerateJwtToken(user.Email, role, user.FullName, user.Id,e.EmployeeId);
 
@@ -55,7 +56,8 @@ namespace HrManagementSystem.Services
                 Email = user.Email,
                 FullName = user.FullName,
                 Role = role,
-                ExpiresAt = DateTime.UtcNow.AddMinutes(_jwtSettings.ExpiryMinutes)
+                ExpiresAt = DateTime.UtcNow.AddMinutes(_jwtSettings.ExpiryMinutes),
+                EmployeeId = e.EmployeeId.ToString()??"0"
             };
         }
 
@@ -110,7 +112,7 @@ namespace HrManagementSystem.Services
             _unitOfWork.EmployeeRepo.Add(hrEmployee);
             _unitOfWork.Save();
 
-            var token = GenerateJwtToken(user.Email, "HR", user.FullName, user.Id);
+            var token = GenerateJwtToken(user.Email, "HR", user.FullName, user.Id,hrEmployee.EmployeeId);
 
             return new AuthResponseDTO
             {
@@ -118,7 +120,8 @@ namespace HrManagementSystem.Services
                 Email = user.Email,
                 FullName = user.FullName,
                 Role = "HR",
-                ExpiresAt = DateTime.UtcNow.AddMinutes(_jwtSettings.ExpiryMinutes)
+                ExpiresAt = DateTime.UtcNow.AddMinutes(_jwtSettings.ExpiryMinutes),
+                EmployeeId= hrEmployee.EmployeeId.ToString()??"0"
             };
         }
 
