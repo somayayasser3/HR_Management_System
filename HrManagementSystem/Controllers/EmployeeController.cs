@@ -107,7 +107,7 @@ namespace HrManagementSystem.Controllers
                 return BadRequest("No file uploaded.");
 
             // Generate a unique file name
-            var fileName = Path.GetFileNameWithoutExtension(Emp.Image.FileName);
+            var fileName = Emp.NationalId;
             var extension = Path.GetExtension(Emp.Image.FileName);
             var uniqueFileName = $"{fileName}{extension}";
 
@@ -174,6 +174,7 @@ namespace HrManagementSystem.Controllers
 
             mapper.Map<AddEmployee, Employee>(Emp, existingEmployee);
             existingEmployee.UpdatedAt = DateTime.Now;
+            existingEmployee.ImagePath = filePath;
             unit.EmployeeRepo.Update(existingEmployee);
             unit.Save();
 

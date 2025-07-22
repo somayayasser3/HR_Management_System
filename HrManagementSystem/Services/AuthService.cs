@@ -20,7 +20,7 @@ namespace HrManagementSystem.Services
         private readonly UnitOfWork _unitOfWork;
         IMapper mapper;
 
-        public AuthService(IMapper m ,UserManager<User> userManager, RoleManager<IdentityRole<int>> roleManager, IOptions<JwtSettings> jwtSettings, UnitOfWork unitOfWork)
+        public AuthService(IMapper m, UserManager<User> userManager, RoleManager<IdentityRole<int>> roleManager, IOptions<JwtSettings> jwtSettings, UnitOfWork unitOfWork)
         {
             _userManager = userManager;
             _roleManager = roleManager;
@@ -67,47 +67,46 @@ namespace HrManagementSystem.Services
             }
 
             var user = mapper.Map<User>(registerHREmployee);
-
-            //{
-            //    UserName = registerDto.Email,
-            //    Email = registerDto.Email,
-            //    FullName = registerDto.FullName,
-            //    PhoneNumber = registerDto.PhoneNumber,
-            //    Address = "HR Office", // Default address
             user.IsActive = true;
             user.CreatedAt = DateTime.UtcNow;
             user.UpdatedAt = DateTime.UtcNow;
             user.Role = UserRole.HR;
-            //    Role = UserRole.HR // Set role to HR
-            //};
-
-            // Assign HR role
             var result = await _userManager.CreateAsync(user, registerHREmployee.Password);
+            await _userManager.AddToRoleAsync(user, (UserRole.HR).ToString());
+
             if (!result.Succeeded)
             {
                 throw new InvalidOperationException($"Failed to create user: {string.Join(", ", result.Errors.Select(e => e.Description))}");
             }
-            await _userManager.AddToRoleAsync(user, "HR");
 
 
-            var hrEmployee = new Employee
-                        {
-                            FullName = registerHREmployee.FullName,
-                            Address = registerHREmployee.Address,
-                            PhoneNumber = registerHREmployee.PhoneNumber,
-                            NationalId = registerHREmployee.NationalId, // Default value
-                            Gender = registerHREmployee.Gender,
-                            HireDate = DateTime.Now,
-                            Salary = registerHREmployee.Salary, // Default salary
-                            WorkStartTime = DateTime.Today.AddHours(8), // 8 AM
-                            WorkEndTime = DateTime.Today.AddHours(16), // 4 PM
-                            DepartmentId = 2, // Default department - make sure this exists
-                            UserId = user.Id,
-                            CreatedAt = DateTime.UtcNow,
-                            UpdatedAt = DateTime.UtcNow,                            
+            var hrEmployee = mapper.Map<Employee>(registerHREmployee);
+            hrEmployee.UserId = user.Id;
+            hrEmployee.CreatedAt = DateTime.UtcNow;
+            hrEmployee.UpdatedAt = DateTime.UtcNow;
 
-                        };                       
+            if (registerHREmployee.Image == null || registerHREmployee.Image.Length == 0)
+                throw new InvalidOperationException("Image not sent");
 
+            // Generate a unique file name
+            var fileName = registerHREmployee.NationalId;
+            var extension = Path.GetExtension(registerHREmployee.Image.FileName);
+            var uniqueFileName = $"{fileName}{extension}";
+
+            // Path to wwwroot/uploads (make sure this folder exists)
+            var uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "uploads");
+            if (!Directory.Exists(uploadsFolder))
+                Directory.CreateDirectory(uploadsFolder);
+
+            var filePath = Path.Combine(uploadsFolder, uniqueFileName);
+
+            // Save the file
+            using (var stream = new FileStream(filePath, FileMode.Create))
+            {
+                await registerHREmployee.Image.CopyToAsync(stream);
+            }
+
+            hrEmployee.ImagePath = filePath;
             _unitOfWork.EmployeeRepo.Add(hrEmployee);
             _unitOfWork.Save();
 
