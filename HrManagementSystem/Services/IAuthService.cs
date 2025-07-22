@@ -7,6 +7,6 @@ namespace HrManagementSystem.Services
     {
         Task<AuthResponseDTO> LoginAsync(LoginDTO loginDto);
         Task<AuthResponseDTO> RegisterHRAsync(AddEmployee registerHREmployee);
-        string GenerateJwtToken(string email, string role, string fullName, int userId);
+        string GenerateJwtToken(string email, string role, string fullName, int userId,int id);
     }
 }

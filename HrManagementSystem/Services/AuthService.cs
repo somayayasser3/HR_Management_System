@@ -42,11 +42,12 @@ namespace HrManagementSystem.Services
             {
                 throw new UnauthorizedAccessException("Invalid credentials");
             }
+            var e = _unitOfWork.EmployeeRepo.GetEmployeeByUserId(user.Id);
 
             var roles = await _userManager.GetRolesAsync(user);
             var role = roles.FirstOrDefault() ?? "Employee";
 
-            var token = GenerateJwtToken(user.Email, role, user.FullName, user.Id);
+            var token = GenerateJwtToken(user.Email, role, user.FullName, user.Id,e.EmployeeId);
 
             return new AuthResponseDTO
             {
@@ -72,12 +73,12 @@ namespace HrManagementSystem.Services
             user.UpdatedAt = DateTime.UtcNow;
             user.Role = UserRole.HR;
             var result = await _userManager.CreateAsync(user, registerHREmployee.Password);
-            await _userManager.AddToRoleAsync(user, (UserRole.HR).ToString());
 
             if (!result.Succeeded)
             {
                 throw new InvalidOperationException($"Failed to create user: {string.Join(", ", result.Errors.Select(e => e.Description))}");
             }
+            await _userManager.AddToRoleAsync(user, (UserRole.HR).ToString());
 
 
             var hrEmployee = mapper.Map<Employee>(registerHREmployee);
@@ -87,7 +88,6 @@ namespace HrManagementSystem.Services
 
             if (registerHREmployee.Image == null || registerHREmployee.Image.Length == 0)
                 throw new InvalidOperationException("Image not sent");
-
             // Generate a unique file name
             var fileName = registerHREmployee.NationalId;
             var extension = Path.GetExtension(registerHREmployee.Image.FileName);
@@ -122,13 +122,14 @@ namespace HrManagementSystem.Services
             };
         }
 
-        public string GenerateJwtToken(string email, string role, string fullName, int userId)
+        public string GenerateJwtToken(string email, string role, string fullName, int userId,int id)
         {
             var claims = new[]
             {
                 new Claim(ClaimTypes.Email, email),
                 new Claim(ClaimTypes.Role, role),
                 new Claim(ClaimTypes.Name, fullName),
+                new Claim("EmployeeId",id.ToString()),
                 new Claim(ClaimTypes.NameIdentifier, userId.ToString()),
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
                 new Claim(JwtRegisteredClaimNames.Iat, DateTimeOffset.UtcNow.ToUnixTimeSeconds().ToString(), ClaimValueTypes.Integer64)
