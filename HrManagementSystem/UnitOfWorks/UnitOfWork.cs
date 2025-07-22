@@ -15,6 +15,8 @@ namespace HrManagementSystem.UnitOfWorks
         SalaryReportRepositroy salaryReportRepo;
         SystemSettingRepository systemSettingRepo;
         UserGroupRepository userGroupRepo;
+        LeaveRepository leaveRepo;
+        EmployeeLeaveBalanceRepository employeeLeaveBalanceRepo;
         public UnitOfWork(HRContext context)
         {
             con = context;
@@ -41,6 +43,24 @@ namespace HrManagementSystem.UnitOfWorks
             }
         }
 
+        public LeaveRepository LeaveRepo
+        {
+            get
+            {
+                if (leaveRepo == null)
+                    leaveRepo = new LeaveRepository(con);
+                return leaveRepo;
+            }
+        }
+        public EmployeeLeaveBalanceRepository EmployeeLeaveBalanceRepo
+        {
+            get
+            {
+                if (employeeLeaveBalanceRepo == null)
+                    employeeLeaveBalanceRepo = new EmployeeLeaveBalanceRepository(con);
+                return employeeLeaveBalanceRepo;
+            }
+        }
 
         public EmployeeRepository EmployeeRepo
         {
