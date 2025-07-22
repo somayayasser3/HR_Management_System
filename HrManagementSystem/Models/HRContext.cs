@@ -17,6 +17,10 @@ namespace HrManagementSystem.Models
         public DbSet<Permission> Permissions { get; set; }
         public DbSet<GroupPermission> GroupPermissions { get; set; }
         public DbSet<SalaryReport> SalaryReports { get; set; }
+        public DbSet<LeaveRequest> LeaveRequests { get; set; }
+        public DbSet<LeaveType> LeaveTypes { get; set; }
+        public DbSet<EmployeeLeaveBalance> EmployeeLeaveBalances { get; set; }
+
         public DbSet<SystemSetting> SystemSettings { get; set; }
         public DbSet<OfficialHoliday> OfficialHolidays { get; set; }
 
@@ -82,6 +86,12 @@ namespace HrManagementSystem.Models
                 .WithMany(p => p.GroupPermissions)
                 .HasForeignKey(gp => gp.PermissionId)
                 .OnDelete(DeleteBehavior.Cascade);
+          
+            modelBuilder.Entity<LeaveType>().HasData(
+            new LeaveType { Id = 1, Name = "Annual", MaxDaysPerYear = 21 },
+            new LeaveType { Id = 2, Name = "Sick", MaxDaysPerYear = 15 },
+            new LeaveType { Id = 3, Name = "Unpaid", MaxDaysPerYear = 0 }
+            );
         }
     }
 
