@@ -26,7 +26,7 @@ namespace HrManagementSystem.Repositories
         public Employee GetEmployeeByUserId(int id)
         {
 
-            return con.Employees.Where(E => E.UserId == id).FirstOrDefault(); 
+            return con.Employees.Include(e => e.Department).Include(e => e.User).Include(e => e.LeaveBalance).Include(e => e.Attendances).Where(e => e.UserId == id).FirstOrDefault();
         }
 
 
