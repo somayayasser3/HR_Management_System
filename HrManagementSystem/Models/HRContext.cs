@@ -23,6 +23,7 @@ namespace HrManagementSystem.Models
 
         public DbSet<SystemSetting> SystemSettings { get; set; }
         public DbSet<OfficialHoliday> OfficialHolidays { get; set; }
+        public DbSet<ChatMessage> ChatMessages { get; set; }
 
         public async Task GenerateMonthlySalaryReportsAsync()
         {

@@ -12,7 +12,7 @@ namespace HrManagementSystem.Repositories
         public List<LeaveRequest> GetAllRequests()
         {
             return con.LeaveRequests
-                .Include(l => l.Employee)
+                .Include(l => l.Employee).Include(l=> l.Employee.LeaveBalance)
                 .Include(l => l.LeaveType)
                 .ToList();
         }
