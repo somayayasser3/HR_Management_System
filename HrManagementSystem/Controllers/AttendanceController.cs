@@ -12,7 +12,7 @@ namespace HrManagementSystem.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    //[Authorize]
+    [Authorize]
     public class AttendanceController : ControllerBase
     {
         UnitOfWork unit;
@@ -23,7 +23,7 @@ namespace HrManagementSystem.Controllers
             mapper = map;
         }
         [HttpGet("all")]
-        //[Authorize(Roles = "Admin,HR")]
+        [Authorize(Roles = "Admin,HR")]
         public IActionResult GetAllAttendance()
         {
             List<GetAttendaceDTO> AllEmpsAttendance = mapper.Map<List<GetAttendaceDTO>>(unit.AttendanceRepo.GetAttendanceWithEmployees());
@@ -35,7 +35,7 @@ namespace HrManagementSystem.Controllers
         }
 
         [HttpGet("employee/{empid}")]
-        //[Authorize(Roles = "Admin,HR")]
+        [Authorize(Roles = "Admin,HR")]
         public IActionResult GetAttendanceForEmployee(int empid)
         {
             List<GetAttendaceDTO> EmpAttendance = mapper.Map<List<GetAttendaceDTO>>(unit.AttendanceRepo.GetAttendanceForEmployee(empid));
@@ -68,7 +68,7 @@ namespace HrManagementSystem.Controllers
 
 
         [HttpPost("new")]
-        //[Authorize(Roles = "Admin,HR,Employee")]
+        [Authorize(Roles = "Admin,HR,Employee")]
         public IActionResult AddAttendanceForEmployee(AddEmpAttendance dto)
         {
 
@@ -166,7 +166,7 @@ namespace HrManagementSystem.Controllers
 
 
         [HttpDelete("delete/{id}")]
-        //[Authorize(Roles = "Admin,HR")]
+        [Authorize(Roles = "Admin,HR")]
         public IActionResult DeleteAttendanceRow(int id)
         {
             Attendance attendance = unit.AttendanceRepo.getByID(id);

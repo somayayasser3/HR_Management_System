@@ -14,7 +14,7 @@ namespace HrManagementSystem.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    //[Authorize] // Ensure that only authenticated users can access this controller
+    [Authorize] // Ensure that only authenticated users can access this controller
     public class EmployeeController : ControllerBase
     {
         UnitOfWork unit;
@@ -84,7 +84,7 @@ namespace HrManagementSystem.Controllers
 
         //////////////////////////////////////////////////////////////
         [HttpPost]
-        //[Authorize(Roles = "HR")]
+        [Authorize(Roles = "HR")]
         [EndpointSummary("Add Employee/User ")]
         public async Task<IActionResult> AddEmployeeAsync(AddEmployee Emp)
         {
@@ -142,7 +142,7 @@ namespace HrManagementSystem.Controllers
         }
 
         [HttpPut("{id}")]
-        //[Authorize(Roles = "HR")]
+        [Authorize(Roles = "HR")]
         [EndpointSummary("Edit Employee/User by ID")]
         public async Task<IActionResult> EditEmployeeAsync(int id, AddEmployee Emp)
         {
