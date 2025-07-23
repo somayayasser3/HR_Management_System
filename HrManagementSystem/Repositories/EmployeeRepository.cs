@@ -12,7 +12,12 @@ namespace HrManagementSystem.Repositories
         {
             return con.Employees.Include(e => e.Department).Include(e=>e.User).Include(e=>e.LeaveBalance).ToList();
         }
-        
+
+
+        public Employee GetEmployeeWithUserID(int id)
+        {
+            return con.Employees.Include(e => e.Department).Include(e => e.User).Include(e => e.LeaveBalance).Include(e=>e.Attendances).Where(e => e.UserId == id).FirstOrDefault();
+        }
         public Employee GetEmployeeWithDeptBYID (int id)
         {
             return con.Employees.Include(e => e.Department).Include(e=> e.User).Include(e => e.LeaveBalance).Where(e => e.EmployeeId == id).FirstOrDefault();

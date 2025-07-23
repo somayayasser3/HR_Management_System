@@ -39,7 +39,6 @@ namespace HrManagementSystem.Mapping
                     des.EmployeeName = src.Employee.FullName;
                 });
             CreateMap<LeaveRequest, AddLeaveRequest>().ReverseMap();
-
             CreateMap<Department, GetDepartmentsDTO>().ReverseMap();
             CreateMap<AddNewDepartmentDTO,Department>();
             CreateMap<UpdateExistingDepartmentDTO,Department>();
