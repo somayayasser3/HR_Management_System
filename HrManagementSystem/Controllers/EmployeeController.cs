@@ -127,8 +127,7 @@ namespace HrManagementSystem.Controllers
                 await Emp.Image.CopyToAsync(stream);
             }
             
-            unit.EmployeeRepo.Add(MappedEmployee);
-            unit.Save();
+           
             var leaveBalance = new EmployeeLeaveBalance
             {
                 EmployeeId = MappedEmployee.EmployeeId,

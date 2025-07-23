@@ -1,9 +1,11 @@
 ﻿using AutoMapper;
+using HrManagementSystem.Controllers;
 using HrManagementSystem.DTOs.AuthDTOs;
 using HrManagementSystem.DTOs.Employee;
 using HrManagementSystem.Models;
 using HrManagementSystem.UnitOfWorks;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
@@ -19,17 +21,19 @@ namespace HrManagementSystem.Services
         private readonly JwtSettings _jwtSettings;
         private readonly UnitOfWork _unitOfWork;
         IMapper mapper;
+        IFaceRecognitionService faceRecognitionService;
 
-        public AuthService(IMapper m, UserManager<User> userManager, RoleManager<IdentityRole<int>> roleManager, IOptions<JwtSettings> jwtSettings, UnitOfWork unitOfWork)
+        public AuthService(IFaceRecognitionService f,IMapper m, UserManager<User> userManager, RoleManager<IdentityRole<int>> roleManager, IOptions<JwtSettings> jwtSettings, UnitOfWork unitOfWork)
         {
             _userManager = userManager;
             _roleManager = roleManager;
             _jwtSettings = jwtSettings.Value;
             _unitOfWork = unitOfWork;
             mapper = m;
+            faceRecognitionService = f;
         }
 
-        public async Task<AuthResponseDTO> LoginAsync(LoginDTO loginDto)
+        public async Task<AuthResponseDTO> LoginAsync([FromForm]LoginDTO loginDto)
         {
             var user = await _userManager.FindByEmailAsync(loginDto.Email);
             if (user == null || !user.IsActive)
@@ -37,6 +41,17 @@ namespace HrManagementSystem.Services
                 throw new UnauthorizedAccessException("Invalid credentials");
             }
 
+            var DBImage = GetFormFileFromWwwRoot(_unitOfWork.EmployeeRepo.GetEmployeeByUserId(user.Id).ImagePath);
+            CompareFacesDto c = new CompareFacesDto()
+            {
+                Image1 = DBImage,
+                Image2 = loginDto.Image,
+            };
+            var faceRecognitionResult =  await faceRecognitionService.CompareFacesAsync(c);
+            if (!faceRecognitionResult.Success || !faceRecognitionResult.IsSamePerson)
+            {
+                throw new UnauthorizedAccessException("Face does not match");
+            }
             var result = await _userManager.CheckPasswordAsync(user, loginDto.Password);
             if (!result)
             {
@@ -149,6 +164,16 @@ namespace HrManagementSystem.Services
                 signingCredentials: creds);
 
             return new JwtSecurityTokenHandler().WriteToken(token);
+        }
+        public IFormFile GetFormFileFromWwwRoot(string relativePath)
+        {
+            //var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot","uploads", relativePath);
+            var stream = new FileStream(relativePath, FileMode.Open, FileAccess.Read);
+            return new FormFile(stream, 0, stream.Length, Path.GetFileName(relativePath), Path.GetFileName(relativePath))
+            {
+                Headers = new HeaderDictionary(),
+                ContentType = "image/jpeg"
+            };
         }
     }
 }

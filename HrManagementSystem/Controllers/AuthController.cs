@@ -20,7 +20,7 @@ namespace HrManagementSystem.Controllers
 
         [HttpPost("login")]
         [EndpointSummary("Login for all users (Admin, HR, Employee)")]
-        public async Task<IActionResult> Login([FromBody] LoginDTO loginDto)
+        public async Task<IActionResult> Login([FromForm] LoginDTO loginDto)
         {
             try
             {

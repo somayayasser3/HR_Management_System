@@ -23,6 +23,7 @@ namespace HrManagementSystem.Repositories
 
             return con.Employees.Where(E => E.UserId == id).FirstOrDefault(); 
         }
+       
 
 
     }

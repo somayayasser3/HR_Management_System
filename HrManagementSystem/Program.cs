@@ -25,7 +25,9 @@ namespace HrManagementSystem
             builder.Services.AddScoped<IAuthService, AuthService>();
             builder.Services.AddScoped<SalaryReportServiceEF>();
 
-            builder.Services.AddHttpClient();
+            //builder.Services.AddHttpClient();
+            builder.Services.AddHttpClient<IFaceRecognitionService, FaceRecognitionService>();
+
             builder.Services.Configure<Microsoft.AspNetCore.Http.Features.FormOptions>(options =>
             {
                 options.MultipartBodyLengthLimit = 50 * 1024 * 1024; // 50MB limit
