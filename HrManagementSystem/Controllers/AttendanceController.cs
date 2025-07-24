@@ -133,8 +133,10 @@ namespace HrManagementSystem.Controllers
         {
 
 
-            double companyLat = 30.558060;     // latitude of company
-            double companyLong = 31.018865;    // longitude of company
+            //double companyLat = 30.558060;     // latitude of company
+            double companyLat = 30.550334;     // latitude of company
+            //double companyLong = 31.018865;    // longitude of company
+            double companyLong = 31.0106341;    // longitude of company
             double allowedRadius = 100;
 
             Attendance AttendanceToUpdate = unit.AttendanceRepo.GetSingleAttendanceForEmployeeByEmployeeIdandDate(dto.EmployeeId, DateTime.Now.Date);
