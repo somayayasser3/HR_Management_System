@@ -19,6 +19,9 @@ namespace HrManagementSystem.Repositories
         {
             return con.Attendances.Include(x => x.Employee).ThenInclude(x => x.Department).FirstOrDefault(x=>x.AttendanceId==id);
         }
-
+        public Attendance GetSingleAttendanceForEmployeeByEmployeeIdandDate(int id, DateTime date)
+        {
+            return con.Attendances.Where(x => x.EmployeeId == id && x.AttendanceDate == date).FirstOrDefault();
+        }
     }
 }

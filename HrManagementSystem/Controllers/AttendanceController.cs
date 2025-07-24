@@ -127,32 +127,38 @@ namespace HrManagementSystem.Controllers
             }
 
         }
+        
         [HttpPut]
         public IActionResult UpdateAttendanceForEmployee(UpdateEmployeeAttendance dto)
         {
-            Attendance AttendanceToUpdate = unit.AttendanceRepo.getByID(dto.AttendanceId);
+
+
+            double companyLat = 30.558060;     // latitude of company
+            double companyLong = 31.018865;    // longitude of company
+            double allowedRadius = 100;
+
+            Attendance AttendanceToUpdate = unit.AttendanceRepo.GetSingleAttendanceForEmployeeByEmployeeIdandDate(dto.EmployeeId, DateTime.Now.Date);
 
             if (AttendanceToUpdate == null) return BadRequest(new { message = "No such attendance" });
-            if (dto == null || dto.CheckInTime >= dto.CheckOutTime)
+            if (dto == null || AttendanceToUpdate.CheckInTime >= dto.CheckOutTime)
                 return BadRequest(new { message = "Invalid check-in or check-out time." });
-            if (!ModelState.IsValid)
-            {
-                var errors = ModelState
-                            .Where(ms => ms.Value.Errors.Any())
-                            .SelectMany(ms => ms.Value.Errors)
-                            .Select(e => e.ErrorMessage)
-                            .ToList();
-                return BadRequest(errors);
-            }
+
             TimeSpan requiredCheckIn = new TimeSpan(8, 0, 0); // 8:00 AM
             TimeSpan requiredCheckOut = new TimeSpan(16, 0, 0); // 4:00 PM
 
-            TimeSpan actualCheckIn = dto.CheckInTime;
+            TimeSpan actualCheckIn = AttendanceToUpdate.CheckInTime;
             TimeSpan? actualCheckOut = dto.CheckOutTime;
+
+            // get the location and compare it to the company Location 
+            var distance = GeoHelper.CalculateDistanceInMeters(dto.Latitude, dto.Longitude, companyLat, companyLong);
+            if (distance > allowedRadius)
+            {
+                return BadRequest(new { message = "You are outside the allowed location range." });
+            }
 
             decimal DelayHours = 0;
             decimal OvertimeHours = 0;
-            if (dto.CheckInTime > requiredCheckIn)
+            if (AttendanceToUpdate.CheckInTime > requiredCheckIn)
                 DelayHours = (decimal)(actualCheckIn - requiredCheckIn).TotalHours;
 
             if (dto.CheckOutTime > requiredCheckOut)
@@ -165,9 +171,9 @@ namespace HrManagementSystem.Controllers
                 AttendanceToUpdate.DelayHours = DelayHours;
                 AttendanceToUpdate.UpdatedAt = DateTime.Now;
                 unit.AttendanceRepo.Update(AttendanceToUpdate);
-                GetAttendaceDTO Updated = mapper.Map <GetAttendaceDTO>(unit.AttendanceRepo.GetSingleAttendanceForEmployee(dto.AttendanceId));
+                GetAttendaceDTO Updated = mapper.Map<GetAttendaceDTO>(unit.AttendanceRepo.GetSingleAttendanceForEmployee(AttendanceToUpdate.AttendanceId));
                 unit.Save();
-               
+
                 return Ok(Updated);
             }
             catch (Exception ex)
@@ -175,7 +181,6 @@ namespace HrManagementSystem.Controllers
                 return BadRequest(new { message = "Try again" });
             }
         }
-
 
         [HttpDelete("delete/{id}")]
         [Authorize(Roles = "Admin,HR")]

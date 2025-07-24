@@ -62,7 +62,7 @@ namespace HrManagementSystem.Controllers
         {
             var user = await _userManager.GetUserAsync(_http.HttpContext.User);
             if (user == null)
-                return Unauthorized("User not found");
+                return Unauthorized(new {  message = "User not found" });
 
             var roles = await _userManager.GetRolesAsync(user);
             var primaryRole = roles.FirstOrDefault() ?? "Employee";
@@ -77,7 +77,7 @@ namespace HrManagementSystem.Controllers
             var employee = unit.EmployeeRepo.GetEmployeeWithUserID(user.Id);
 
             if (string.IsNullOrWhiteSpace(request.Message))
-                return BadRequest("Message cannot be empty.");
+                return BadRequest( new { message = "Message cannot be empty." });
 
             // Store user message
             await unit.ChatRepo.AddAsync(new ChatMessage
