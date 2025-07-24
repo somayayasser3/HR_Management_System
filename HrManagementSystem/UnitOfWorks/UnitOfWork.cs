@@ -18,9 +18,20 @@ namespace HrManagementSystem.UnitOfWorks
         UserGroupRepository userGroupRepo;
         LeaveRepository leaveRepo;
         EmployeeLeaveBalanceRepository employeeLeaveBalanceRepo;
+        ChatRepository chatRepo;
         public UnitOfWork(HRContext context)
         {
             con = context;
+        }
+        public ChatRepository ChatRepo
+        {
+            get
+            {
+                if (chatRepo == null)
+
+                    chatRepo = new ChatRepository(con);
+                return chatRepo;
+            }
         }
 
         public AttendanceRepository AttendanceRepo

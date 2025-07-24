@@ -29,6 +29,11 @@ namespace HrManagementSystem.Controllers
         public IActionResult GetAllSystemSettings()
         {
             var settings = unit.SystemSettingRepo.getAll();
+            if (settings == null || !settings.Any())
+            {
+                return NotFound(new { message = "No system settings found." });
+            }
+
             var settingsDto = mapper.Map<List<DisplaySystemSettingsDTO>>(settings);
             return Ok(settingsDto);
         }
@@ -40,7 +45,8 @@ namespace HrManagementSystem.Controllers
         {
             var setting = unit.SystemSettingRepo.getByID(id);
             if (setting == null)
-                return NotFound();
+                return NotFound(new { message = "System setting not found." });
+
 
             var settingDto = mapper.Map<DisplaySystemSettingsDTO>(setting);
             return Ok(settingDto);
@@ -56,7 +62,7 @@ namespace HrManagementSystem.Controllers
 
             unit.SystemSettingRepo.Add(setting);
             unit.Save();
-            return Ok(setting);
+            return Ok(new { message = "System settings Added "});
         }
 
         [HttpPut("{id}")]
@@ -66,7 +72,7 @@ namespace HrManagementSystem.Controllers
         {
             var existingSetting = unit.SystemSettingRepo.getByID(id);
             if (existingSetting == null)
-                return NotFound();
+                return NotFound(new { message = "System setting not found." });
 
             mapper.Map(EditedDTO, existingSetting);
             existingSetting.UpdatedAt = DateTime.Now;
@@ -74,7 +80,7 @@ namespace HrManagementSystem.Controllers
             unit.SystemSettingRepo.Update(existingSetting);
             unit.Save();
 
-            return Ok();
+            return Ok(new { message = "Edited  successfully." });
         }
 
         [HttpDelete("{id}")]
@@ -83,12 +89,12 @@ namespace HrManagementSystem.Controllers
         public IActionResult DeleteSystemSettings(int id)
         {
             if (id == null)
-                return NotFound();
+                return NotFound(new {message = "System setting not found." });
 
             unit.SystemSettingRepo.Delete(id);
             unit.Save();
 
-            return Ok();
+            return Ok(new { message = "System setting deleted successfully." });
         }
 
 

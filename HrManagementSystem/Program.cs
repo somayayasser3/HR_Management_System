@@ -38,6 +38,8 @@ namespace HrManagementSystem
 
             builder.Services.AddDbContext<HRContext>(options =>
                 options.UseSqlServer(builder.Configuration.GetConnectionString("Con")));
+            builder.Services.Configure<OpenAISettings>(
+                builder.Configuration.GetSection("OpenAI"));
 
             builder.Services.AddAutoMapper(typeof(MapConfig));
 

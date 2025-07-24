@@ -38,7 +38,7 @@ namespace HrManagementSystem.Controllers
         }
 
         [HttpPost("register-hr")]
-        //[Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin")]
         [EndpointSummary("Register HR (Admin only)")]
         public async Task<IActionResult> RegisterHR([FromForm] AddEmployee registerDto)
         {

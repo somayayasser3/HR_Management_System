@@ -14,7 +14,7 @@ namespace HrManagementSystem.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    //[Authorize] // Ensure that only authenticated users can access this controller
+    [Authorize] // Ensure that only authenticated users can access this controller
     public class EmployeeController : ControllerBase
     {
         UnitOfWork unit;
@@ -51,13 +51,13 @@ namespace HrManagementSystem.Controllers
         [EndpointSummary("Get current employee's profile")]
         public IActionResult GetMyProfile()
         {
-            var userId = int.Parse(User.FindFirst("EmployeeId")?.Value);
-            var employee = mapper.Map<DisplayEmployeeData>(unit.EmployeeRepo.GetEmployeeWithDeptBYID(userId));
+            var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
+            var employee = unit.EmployeeRepo.GetEmployeeByUserId(userId);
 
             //var employee = unit.EmployeeRepo.getAll().FirstOrDefault(e => e.UserId == userId);
 
             if (employee == null)
-                return NotFound("Employee profile not found");
+                return NotFound(new {  message = "Employee profile not found" });
 
             var mappedEmployee = mapper.Map<DisplayEmployeeData>(employee);
             return Ok(mappedEmployee);
@@ -72,7 +72,7 @@ namespace HrManagementSystem.Controllers
             var employee = unit.EmployeeRepo.getAll().FirstOrDefault(e => e.UserId == userId);
 
             if (employee == null)
-                return NotFound("Employee profile not found");
+                return NotFound(new {  message = "Employee profile not found" });
 
             employee.Address = updateDto.Address;
             employee.PhoneNumber = updateDto.PhoneNumber;
@@ -86,7 +86,7 @@ namespace HrManagementSystem.Controllers
 
         //////////////////////////////////////////////////////////////
         [HttpPost]
-        //[Authorize(Roles = "HR")]
+        [Authorize(Roles = "HR,Admin")]
         [EndpointSummary("Add Employee/User ")]
         public async Task<IActionResult> AddEmployeeAsync(AddEmployee Emp)
         {
@@ -120,8 +120,6 @@ namespace HrManagementSystem.Controllers
                 Directory.CreateDirectory(uploadsFolder);
             var filePath = Path.Combine(uploadsFolder, uniqueFileName);
             MappedEmployee.ImagePath = filePath;
-            unit.EmployeeRepo.Add(MappedEmployee);
-            unit.Save();
 
             // Save the file
             using (var stream = new FileStream(filePath, FileMode.Create))
@@ -139,7 +137,7 @@ namespace HrManagementSystem.Controllers
             };
             unit.EmployeeLeaveBalanceRepo.Add(leaveBalance);
             unit.Save();
-            return Ok("Employee Added Successfully");
+            return Ok(new {message = "Employee Added Successfully" });
         }
 
         [HttpPut("{id}")]
@@ -155,7 +153,7 @@ namespace HrManagementSystem.Controllers
 
             var existingUser = await _userManager.FindByIdAsync(existingEmployee.UserId.ToString());
             if (existingUser == null)
-                return NotFound("Linked User not found");
+                return NotFound(new {  message = "Linked User not found" });
 
             //mapper.Map<UpdateEmployeeDTO, User>(Emp, existingUser);
 
@@ -169,13 +167,13 @@ namespace HrManagementSystem.Controllers
             unit.EmployeeRepo.Update(existingEmployee);
             unit.Save();
 
-            return Ok("Edited Successfully");
+            return Ok(new {message = "Updated Successfully"});
 
         }
         
 
         [HttpDelete("{id}")]
-        [Authorize(Roles = "HR")]
+        [Authorize(Roles = "HR,Admin")]
         [EndpointSummary("Delete Employee/user by ID")]
         public IActionResult DeleteEmployee(int id)
         {

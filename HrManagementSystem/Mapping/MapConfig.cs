@@ -41,7 +41,6 @@ namespace HrManagementSystem.Mapping
                     des.EmployeeName = src.Employee.FullName;
                 });
             CreateMap<LeaveRequest, AddLeaveRequest>().ReverseMap();
-
             CreateMap<Department, GetDepartmentsDTO>().ReverseMap();
             CreateMap<AddNewDepartmentDTO,Department>();
             CreateMap<UpdateExistingDepartmentDTO,Department>();
@@ -58,16 +57,6 @@ namespace HrManagementSystem.Mapping
             });
             CreateMap<Attendance, AddEmpAttendance>().ReverseMap();
             CreateMap<Attendance, UpdateEmployeeAttendance>().ReverseMap();
-            CreateMap<WorkingTask, AddWorkingTaskDTO>().ReverseMap();
-            CreateMap<WorkingTask, DisplayWorkingTaskDTO>().AfterMap((src, dest) =>
-            {
-                dest.TaskId = src.Id;
-                dest.EmployeeName = src.Employee?.FullName;
-                dest.EmployeeId = src.Employee.EmployeeId;
-                dest.DepartmentName= src.Employee.Department.DepartmentName;
-
-            }).ReverseMap();
-            CreateMap<AdminUpdatesTaskDTO, WorkingTask>().ReverseMap();
             CreateMap<UpdateEmployeeDTO, Employee>().ReverseMap();
             //CreateMap<GetAttendaceDTO, AddEmpAttendance>().ReverseMap();
             //CreateMap<GetAttendaceDTO, UpdateEmployeeAttendance>().ReverseMap();

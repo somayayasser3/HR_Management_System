@@ -1,5 +1,7 @@
 ﻿using AutoMapper;
 using HrManagementSystem.DTOs.AttendaceDTOs;
+using HrManagementSystem.DTOs.AuthDTOs;
+using HrManagementSystem.Helper;
 using HrManagementSystem.Models;
 using HrManagementSystem.UnitOfWorks;
 using Microsoft.AspNetCore.Authorization;
@@ -23,19 +25,19 @@ namespace HrManagementSystem.Controllers
             mapper = map;
         }
         [HttpGet("all")]
-        //[Authorize(Roles = "Admin,HR")]
+        [Authorize(Roles = "Admin,HR")]
         public IActionResult GetAllAttendance()
         {
             List<GetAttendaceDTO> AllEmpsAttendance = mapper.Map<List<GetAttendaceDTO>>(unit.AttendanceRepo.GetAttendanceWithEmployees());
             if (AllEmpsAttendance.Count == 0)
             {
-                return NotFound();
+                return NotFound(new { message = "No Attendance Founded."});
             }
             return Ok(AllEmpsAttendance);
         }
 
         [HttpGet("employee/{empid}")]
-        //[Authorize(Roles = "Admin,HR")]
+        [Authorize(Roles = "Admin,HR")]
         public IActionResult GetAttendanceForEmployee(int empid)
         {
             List<GetAttendaceDTO> EmpAttendance = mapper.Map<List<GetAttendaceDTO>>(unit.AttendanceRepo.GetAttendanceForEmployee(empid));
@@ -59,7 +61,7 @@ namespace HrManagementSystem.Controllers
             var employee = unit.EmployeeRepo.getAll().FirstOrDefault(e => e.UserId == userId);
 
             if (employee == null)
-                return NotFound("Employee not found");
+                return NotFound(new { message = "Employee not found" });
 
             List<GetAttendaceDTO> EmpAttendance = mapper.Map<List<GetAttendaceDTO>>(unit.AttendanceRepo.GetAttendanceForEmployee(employee.EmployeeId));
             return Ok(EmpAttendance);
@@ -71,6 +73,9 @@ namespace HrManagementSystem.Controllers
         //[Authorize(Roles = "Admin,HR,Employee")]
         public IActionResult AddAttendanceForEmployee(AddEmpAttendance dto)
         {
+            double companyLat = 30.558060;     // latitude of company
+            double companyLong = 31.018865;    // longitude of company
+            double allowedRadius = 100;     
 
             if (dto == null || dto.CheckInTime >= dto.CheckOutTime)
                 return BadRequest(new { message = "Invalid check-in or check-out time." });
@@ -83,6 +88,13 @@ namespace HrManagementSystem.Controllers
                             .ToList();
                 return BadRequest(errors);
             }
+            // get the location and compare it to the company Location 
+            var distance = GeoHelper.CalculateDistanceInMeters(dto.Latitude, dto.Longitude,companyLat, companyLong);
+            if (distance > allowedRadius)
+            {
+                return BadRequest(new { message = "You are outside the allowed location range." });
+            }
+
             TimeSpan requiredCheckIn = new TimeSpan(8, 0, 0); // 8:00 AM
             TimeSpan requiredCheckOut = new TimeSpan(16, 0, 0); // 4:00 PM
 
@@ -115,12 +127,19 @@ namespace HrManagementSystem.Controllers
             }
 
         }
+        
         [HttpPut]
         public IActionResult UpdateAttendanceForEmployee(UpdateEmployeeAttendance dto)
         {
-            
-            
-            Attendance AttendanceToUpdate = unit.AttendanceRepo.GetSingleAttendanceForEmployeeByEmployeeIdandDate(dto.EmployeeId,DateTime.Now.Date);
+
+
+            //double companyLat = 30.558060;     // latitude of company
+            double companyLat = 30.550334;     // latitude of company
+            //double companyLong = 31.018865;    // longitude of company
+            double companyLong = 31.0106341;    // longitude of company
+            double allowedRadius = 100;
+
+            Attendance AttendanceToUpdate = unit.AttendanceRepo.GetSingleAttendanceForEmployeeByEmployeeIdandDate(dto.EmployeeId, DateTime.Now.Date);
 
             if (AttendanceToUpdate == null) return BadRequest(new { message = "No such attendance" });
             if (dto == null || AttendanceToUpdate.CheckInTime >= dto.CheckOutTime)
@@ -131,6 +150,13 @@ namespace HrManagementSystem.Controllers
 
             TimeSpan actualCheckIn = AttendanceToUpdate.CheckInTime;
             TimeSpan? actualCheckOut = dto.CheckOutTime;
+
+            // get the location and compare it to the company Location 
+            var distance = GeoHelper.CalculateDistanceInMeters(dto.Latitude, dto.Longitude, companyLat, companyLong);
+            if (distance > allowedRadius)
+            {
+                return BadRequest(new { message = "You are outside the allowed location range." });
+            }
 
             decimal DelayHours = 0;
             decimal OvertimeHours = 0;
@@ -147,9 +173,9 @@ namespace HrManagementSystem.Controllers
                 AttendanceToUpdate.DelayHours = DelayHours;
                 AttendanceToUpdate.UpdatedAt = DateTime.Now;
                 unit.AttendanceRepo.Update(AttendanceToUpdate);
-                GetAttendaceDTO Updated = mapper.Map <GetAttendaceDTO>(unit.AttendanceRepo.GetSingleAttendanceForEmployee(AttendanceToUpdate.AttendanceId));
+                GetAttendaceDTO Updated = mapper.Map<GetAttendaceDTO>(unit.AttendanceRepo.GetSingleAttendanceForEmployee(AttendanceToUpdate.AttendanceId));
                 unit.Save();
-               
+
                 return Ok(Updated);
             }
             catch (Exception ex)
@@ -158,9 +184,8 @@ namespace HrManagementSystem.Controllers
             }
         }
 
-
         [HttpDelete("delete/{id}")]
-        //[Authorize(Roles = "Admin,HR")]
+        [Authorize(Roles = "Admin,HR")]
         public IActionResult DeleteAttendanceRow(int id)
         {
             Attendance attendance = unit.AttendanceRepo.getByID(id);
