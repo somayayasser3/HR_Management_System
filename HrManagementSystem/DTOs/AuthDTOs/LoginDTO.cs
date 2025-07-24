@@ -10,5 +10,7 @@ namespace HrManagementSystem.DTOs.AuthDTOs
 
         [Required]
         public string Password { get; set; }
+
+
     }
 }
