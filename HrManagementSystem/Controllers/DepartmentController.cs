@@ -45,7 +45,7 @@ namespace HrManagementSystem.Controllers
         {
             Department updatedDept = unit.DepartmentRepo.getByID(deptToUpdate.DepartmentId);
             if (updatedDept == null) {
-                return BadRequest("No such department");
+                return BadRequest(new { message = "No such department" } );
             }
             //updatedDept = mapper.Map<Department>(deptToUpdate);
             mapper.Map(deptToUpdate, updatedDept);
@@ -61,7 +61,7 @@ namespace HrManagementSystem.Controllers
         {
             Department deletedDept= unit.DepartmentRepo.getByID(id);
             if (deletedDept == null) {
-                return BadRequest("No such department");
+                return BadRequest(new { message = "No such department" } );
             }
             unit.DepartmentRepo.Delete(id);
             unit.Save();

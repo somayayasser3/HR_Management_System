@@ -31,7 +31,7 @@ namespace HrManagementSystem.Controllers
             List<GetAttendaceDTO> AllEmpsAttendance = mapper.Map<List<GetAttendaceDTO>>(unit.AttendanceRepo.GetAttendanceWithEmployees());
             if (AllEmpsAttendance.Count == 0)
             {
-                return NotFound();
+                return NotFound(new { message = "No Attendance Founded."});
             }
             return Ok(AllEmpsAttendance);
         }
@@ -61,7 +61,7 @@ namespace HrManagementSystem.Controllers
             var employee = unit.EmployeeRepo.getAll().FirstOrDefault(e => e.UserId == userId);
 
             if (employee == null)
-                return NotFound("Employee not found");
+                return NotFound(new { message = "Employee not found" });
 
             List<GetAttendaceDTO> EmpAttendance = mapper.Map<List<GetAttendaceDTO>>(unit.AttendanceRepo.GetAttendanceForEmployee(employee.EmployeeId));
             return Ok(EmpAttendance);
