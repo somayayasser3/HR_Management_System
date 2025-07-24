@@ -6,11 +6,13 @@ namespace HrManagementSystem.Repositories
     public class SalaryReportRepositroy : GenericRepo<SalaryReport>
     {
         public SalaryReportRepositroy(HRContext context) : base(context){}
-        public SalaryReport GetSalaryMonthReportWithEmployee (int month , int empId)
+        public async Task<SalaryReport> GetSalaryMonthReportWithEmployee(int month, int year, int empId)
         {
-            return con.SalaryReports
+            return await con.SalaryReports
+                .AsNoTracking()
                 .Include(x => x.Employee)
-                .FirstOrDefault(x => x.Month == month && x.EmployeeId == empId);
+                .ThenInclude(e => e.Department)
+                .FirstOrDefaultAsync(x => x.Month == month && x.EmployeeId == empId && x.Year == year);
         }
         public List<SalaryReport> GetAllReportsWithEmps ()
         {

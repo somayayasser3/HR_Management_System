@@ -1,11 +1,8 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
-using System.ComponentModel.DataAnnotations;
-
-namespace HrManagementSystem.DTOs.Employee
+﻿namespace HrManagementSystem.DTOs.EmployeeDTOs
 {
-    public class AddEmployee
+    public class UpdateEmployeeDTO
     {
-
+        public int EmployeeId { get; set; }
         public string FullName { get; set; }
         public string Address { get; set; }
         public string PhoneNumber { get; set; }
@@ -19,8 +16,6 @@ namespace HrManagementSystem.DTOs.Employee
         public DateTime WorkEndTime { get; set; }
         public int DepartmentId { get; set; }
 
-        public IFormFile Image { get; set; }
-
-
+        public IFormFile? Image { get; set; }
     }
 }

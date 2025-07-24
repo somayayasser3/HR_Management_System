@@ -7,6 +7,7 @@ using HrManagementSystem.DTOs.DepartmentsDTOs;
 using HrManagementSystem.DTOs.SalaryReportsDTOs;
 using HrManagementSystem.Models;
 using HrManagementSystem.DTOs.LeaveDTOs;
+using HrManagementSystem.DTOs.EmployeeDTOs;
 
 namespace HrManagementSystem.Mapping
 {
@@ -55,6 +56,7 @@ namespace HrManagementSystem.Mapping
             });
             CreateMap<Attendance, AddEmpAttendance>().ReverseMap();
             CreateMap<Attendance, UpdateEmployeeAttendance>().ReverseMap();
+            CreateMap<UpdateEmployeeDTO, Employee>().ReverseMap();
             //CreateMap<GetAttendaceDTO, AddEmpAttendance>().ReverseMap();
             //CreateMap<GetAttendaceDTO, UpdateEmployeeAttendance>().ReverseMap();
         }

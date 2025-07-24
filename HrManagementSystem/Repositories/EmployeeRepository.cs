@@ -22,5 +22,13 @@ namespace HrManagementSystem.Repositories
         {
             return con.Employees.Include(e => e.Department).Include(e=> e.User).Include(e => e.LeaveBalance).Where(e => e.EmployeeId == id).FirstOrDefault();
         }
+
+        public Employee GetEmployeeByUserId(int id)
+        {
+
+            return con.Employees.Include(e => e.Department).Include(e => e.User).Include(e => e.LeaveBalance).Include(e => e.Attendances).Where(e => e.UserId == id).FirstOrDefault();
+        }
+
+
     }
 }

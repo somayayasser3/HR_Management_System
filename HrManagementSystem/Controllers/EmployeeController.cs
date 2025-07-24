@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace HrManagementSystem.Controllers
 {
@@ -38,7 +39,7 @@ namespace HrManagementSystem.Controllers
         [HttpGet("{EmpID}")]
         [Authorize(Roles = "Admin,HR")]
         [EndpointSummary("Get Employee by ID")]
-        public IActionResult GetEmployeeByID( int EmpID)
+        public IActionResult GetEmployeeByID(int EmpID)
         {
             var employee = unit.EmployeeRepo.GetEmployeeWithDeptBYID(EmpID);
             var mappedEmployee = mapper.Map<DisplayEmployeeData>(employee);
@@ -51,7 +52,7 @@ namespace HrManagementSystem.Controllers
         public IActionResult GetMyProfile()
         {
             var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
-            var employee = unit.EmployeeRepo.getAll().FirstOrDefault(e => e.UserId == userId);
+            var employee = unit.EmployeeRepo.GetEmployeeByUserId(userId);
 
             if (employee == null)
                 return NotFound("Employee profile not found");
@@ -83,7 +84,7 @@ namespace HrManagementSystem.Controllers
 
         //////////////////////////////////////////////////////////////
         [HttpPost]
-        //[Authorize(Roles = "HR")]
+        [Authorize(Roles = "HR")]
         [EndpointSummary("Add Employee/User ")]
         public async Task<IActionResult> AddEmployeeAsync(AddEmployee Emp)
         {
@@ -91,7 +92,7 @@ namespace HrManagementSystem.Controllers
             user.Role = UserRole.Employee; // Set the role to Employee
 
             var AddUser = await _userManager.CreateAsync(user, Emp.Password);
-            
+
             if (!AddUser.Succeeded)
                 return BadRequest(AddUser.Errors);
 
@@ -102,6 +103,29 @@ namespace HrManagementSystem.Controllers
             MappedEmployee.CreatedAt = DateTime.UtcNow;
             MappedEmployee.UpdatedAt = DateTime.UtcNow;
 
+
+            if (Emp.Image == null || Emp.Image.Length == 0)
+                return BadRequest("No file uploaded.");
+
+            // Generate a unique file name
+            var fileName = Emp.NationalId;
+            var extension = Path.GetExtension(Emp.Image.FileName);
+            var uniqueFileName = $"{fileName}{extension}";
+
+            // Path to wwwroot/uploads (make sure this folder exists)
+            var uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "uploads");
+            if (!Directory.Exists(uploadsFolder))
+                Directory.CreateDirectory(uploadsFolder);
+            var filePath = Path.Combine(uploadsFolder, uniqueFileName);
+            MappedEmployee.ImagePath = filePath;
+            unit.EmployeeRepo.Add(MappedEmployee);
+            unit.Save();
+
+            // Save the file
+            using (var stream = new FileStream(filePath, FileMode.Create))
+            {
+                await Emp.Image.CopyToAsync(stream);
+            }
             
             unit.EmployeeRepo.Add(MappedEmployee);
             unit.Save();
@@ -118,26 +142,29 @@ namespace HrManagementSystem.Controllers
         }
 
         [HttpPut("{id}")]
-        [Authorize(Roles = "HR")]
+        [Authorize(Roles = "HR,Admin")]
         [EndpointSummary("Edit Employee/User by ID")]
-        public async Task<IActionResult> EditEmployeeAsync( int id , AddEmployee Emp)
+        public async Task<IActionResult> EditEmployeeAsync(UpdateEmployeeDTO Emp)
         {
-            var existingEmployee = unit.EmployeeRepo.GetEmployeeWithDeptBYID(id);
+            var existingEmployee = unit.EmployeeRepo.GetEmployeeWithDeptBYID(Emp.EmployeeId);
             if (existingEmployee == null)
                 return NotFound();
+
+            string path = existingEmployee.ImagePath;
 
             var existingUser = await _userManager.FindByIdAsync(existingEmployee.UserId.ToString());
             if (existingUser == null)
                 return NotFound("Linked User not found");
-          
-            mapper.Map<AddEmployee, User>(Emp, existingUser);
-          
+
+            //mapper.Map<UpdateEmployeeDTO, User>(Emp, existingUser);
+
             var userUpdate = await _userManager.UpdateAsync(existingUser);
             if (!userUpdate.Succeeded)
                 return BadRequest(userUpdate.Errors);
 
-            mapper.Map<AddEmployee, Employee>(Emp, existingEmployee);
+            mapper.Map<UpdateEmployeeDTO, Employee>(Emp, existingEmployee);
             existingEmployee.UpdatedAt = DateTime.Now;
+            existingEmployee.ImagePath = path;
             unit.EmployeeRepo.Update(existingEmployee);
             unit.Save();
 
@@ -146,7 +173,7 @@ namespace HrManagementSystem.Controllers
         }
 
         [HttpDelete("{id}")]
-        [Authorize(Roles = "HR")]
+        [Authorize(Roles = "HR,Admin")]
         [EndpointSummary("Delete Employee/user by ID")]
         public IActionResult DeleteEmployee(int id)
         {
@@ -166,5 +193,6 @@ namespace HrManagementSystem.Controllers
             // soft delete the user should have the its data still in system 
 
             return Ok(employee);
-        } }
+        }
+    }
 }

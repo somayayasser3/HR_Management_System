@@ -1,11 +1,11 @@
 ﻿using HrManagementSystem.Mapping;
 using HrManagementSystem.Models;
 using HrManagementSystem.Services;
+
 using HrManagementSystem.UnitOfWorks;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System.Text;
@@ -25,9 +25,19 @@ namespace HrManagementSystem
             builder.Services.AddScoped<IAuthService, AuthService>();
             builder.Services.AddScoped<SalaryReportServiceEF>();
 
+            builder.Services.AddHttpClient();
+            builder.Services.Configure<Microsoft.AspNetCore.Http.Features.FormOptions>(options =>
+            {
+                options.MultipartBodyLengthLimit = 50 * 1024 * 1024; // 50MB limit
+            });
+
+
+
 
             builder.Services.AddDbContext<HRContext>(options =>
                 options.UseSqlServer(builder.Configuration.GetConnectionString("Con")));
+            builder.Services.Configure<OpenAISettings>(
+                builder.Configuration.GetSection("OpenAI"));
 
             builder.Services.AddAutoMapper(typeof(MapConfig));
 
