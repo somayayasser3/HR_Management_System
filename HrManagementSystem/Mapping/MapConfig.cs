@@ -61,6 +61,7 @@ namespace HrManagementSystem.Mapping
             CreateMap<WorkingTask, AddWorkingTaskDTO>().ReverseMap();
             CreateMap<WorkingTask, DisplayWorkingTaskDTO>().AfterMap((src, dest) =>
             {
+                dest.TaskId = src.Id;
                 dest.EmployeeName = src.Employee?.FullName;
                 dest.EmployeeId = src.Employee.EmployeeId;
                 dest.DepartmentName= src.Employee.Department.DepartmentName;

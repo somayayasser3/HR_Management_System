@@ -65,12 +65,12 @@ namespace HrManagementSystem.Controllers
             return Ok(task);
         }
 
-        [HttpGet("employee/tasks")]
+        [HttpGet("employee/tasks/{empId}")]
         [EndpointSummary("Get Employee Tasks")]
-        public async Task<IActionResult> GetAllEmployeeTasks(int id)
+        public async Task<IActionResult> GetAllEmployeeTasks(int empId)
         {
-            if (unit.EmployeeRepo.getByID(id)==null) return BadRequest(new { message = "No such employee" });  
-            List<DisplayWorkingTaskDTO> AllEmpTasks = mapper.Map<List<DisplayWorkingTaskDTO>> (await unit.WorkingTaskRepo.getEmployeeAllTasks(id));
+            if (unit.EmployeeRepo.getByID(empId)==null) return BadRequest(new { message = "No such employee" });  
+            List<DisplayWorkingTaskDTO> AllEmpTasks = mapper.Map<List<DisplayWorkingTaskDTO>> (await unit.WorkingTaskRepo.getEmployeeAllTasks(empId));
             if (AllEmpTasks == null) {
                 return BadRequest(new { message = "Employee has no tasks" });
             }
