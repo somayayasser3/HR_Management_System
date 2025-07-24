@@ -51,8 +51,10 @@ namespace HrManagementSystem.Controllers
         [EndpointSummary("Get current employee's profile")]
         public IActionResult GetMyProfile()
         {
-            var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
-            var employee = unit.EmployeeRepo.getAll().FirstOrDefault(e => e.UserId == userId);
+            var userId = int.Parse(User.FindFirst("EmployeeId")?.Value);
+            var employee = mapper.Map<DisplayEmployeeData>(unit.EmployeeRepo.GetEmployeeWithDeptBYID(userId));
+
+            //var employee = unit.EmployeeRepo.getAll().FirstOrDefault(e => e.UserId == userId);
 
             if (employee == null)
                 return NotFound("Employee profile not found");
@@ -141,56 +143,36 @@ namespace HrManagementSystem.Controllers
         }
 
         [HttpPut("{id}")]
-        //[Authorize(Roles = "HR")]
+        [Authorize(Roles = "HR,Admin")]
         [EndpointSummary("Edit Employee/User by ID")]
-        public async Task<IActionResult> EditEmployeeAsync(int id, AddEmployee Emp)
+        public async Task<IActionResult> EditEmployeeAsync(UpdateEmployeeDTO Emp)
         {
-            var existingEmployee = unit.EmployeeRepo.GetEmployeeWithDeptBYID(id);
+            var existingEmployee = unit.EmployeeRepo.GetEmployeeWithDeptBYID(Emp.EmployeeId);
             if (existingEmployee == null)
                 return NotFound();
 
-
-            if (Emp.Image == null || Emp.Image.Length == 0)
-                return BadRequest("No file uploaded.");
-
-            // Generate a unique file name
-            var fileName = Path.GetFileNameWithoutExtension(Emp.Image.FileName);
-            var extension = Path.GetExtension(Emp.Image.FileName);
-            var uniqueFileName = $"{fileName}{extension}";
-
-            // Path to wwwroot/uploads (make sure this folder exists)
-            var uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "uploads");
-            if (!Directory.Exists(uploadsFolder))
-                Directory.CreateDirectory(uploadsFolder);
-
-            var filePath = Path.Combine(uploadsFolder, uniqueFileName);
-
-            // Save the file
-            using (var stream = new FileStream(filePath, FileMode.Create))
-            {
-                await Emp.Image.CopyToAsync(stream);
-            }
-
+            string path = existingEmployee.ImagePath;
 
             var existingUser = await _userManager.FindByIdAsync(existingEmployee.UserId.ToString());
             if (existingUser == null)
                 return NotFound("Linked User not found");
 
-            mapper.Map<AddEmployee, User>(Emp, existingUser);
+            //mapper.Map<UpdateEmployeeDTO, User>(Emp, existingUser);
 
             var userUpdate = await _userManager.UpdateAsync(existingUser);
             if (!userUpdate.Succeeded)
                 return BadRequest(userUpdate.Errors);
 
-            mapper.Map<AddEmployee, Employee>(Emp, existingEmployee);
+            mapper.Map<UpdateEmployeeDTO, Employee>(Emp, existingEmployee);
             existingEmployee.UpdatedAt = DateTime.Now;
-            existingEmployee.ImagePath = filePath;
+            existingEmployee.ImagePath = path;
             unit.EmployeeRepo.Update(existingEmployee);
             unit.Save();
 
             return Ok("Edited Successfully");
 
         }
+        
 
         [HttpDelete("{id}")]
         [Authorize(Roles = "HR")]

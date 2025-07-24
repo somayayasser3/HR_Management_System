@@ -30,17 +30,17 @@ namespace HrManagementSystem.Controllers
             return Ok(AllSalaryReports);
         }
 
-        [HttpGet("employee/SpecificSalary")]
-        [EndpointSummary("Get salary report for specific employee in a specific month")]
+        [HttpPost("SpecificSalary")]
+        [EndpointSummary("Get salary report for specific employee in assssssssssss specific month")]
         //[Authorize(Roles = "Admin,HR")]
-        public async Task<IActionResult> GetEmployeeSalarReportInMonth(int empid , int month , int year) 
+        public async Task<IActionResult> GetEmployeeSalarReportInMonth(GetSalaryReportForSpecificEmployeeDTO salaryReportInfo)
         {
-            GetSalaryReportDTO empSalaryReport =  mapper.Map<GetSalaryReportDTO>(await unit.SalaryReportRepo.GetSalaryMonthReportWithEmployee(month,year, empid));
+            GetSalaryReportDTO empSalaryReport = mapper.Map<GetSalaryReportDTO>(await unit.SalaryReportRepo.GetSalaryMonthReportWithEmployee(salaryReportInfo.Month, salaryReportInfo.Year, salaryReportInfo.EmployeeId));
             if (empSalaryReport == null)
             {
                 return BadRequest("Something went wrong");
             }
-           
+
             return Ok(empSalaryReport);
         }
         [HttpGet("employee/{empid}")]

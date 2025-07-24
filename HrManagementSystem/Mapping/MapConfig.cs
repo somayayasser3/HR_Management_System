@@ -7,6 +7,8 @@ using HrManagementSystem.DTOs.DepartmentsDTOs;
 using HrManagementSystem.DTOs.SalaryReportsDTOs;
 using HrManagementSystem.Models;
 using HrManagementSystem.DTOs.LeaveDTOs;
+using HrManagementSystem.DTOs.WorkingTaskDTOs;
+using HrManagementSystem.DTOs.EmployeeDTOs;
 
 namespace HrManagementSystem.Mapping
 {
@@ -56,6 +58,13 @@ namespace HrManagementSystem.Mapping
             });
             CreateMap<Attendance, AddEmpAttendance>().ReverseMap();
             CreateMap<Attendance, UpdateEmployeeAttendance>().ReverseMap();
+            CreateMap<WorkingTask, AddWorkingTaskDTO>().ReverseMap();
+            CreateMap<WorkingTask, DisplayWorkingTaskDTO>().AfterMap((src, dest) =>
+            {
+                dest.EmployeeName = src.Employee?.FullName;
+            }).ReverseMap();
+            CreateMap<AdminUpdatesTaskDTO, WorkingTask>().ReverseMap();
+            CreateMap<UpdateEmployeeDTO, Employee>().ReverseMap();
             //CreateMap<GetAttendaceDTO, AddEmpAttendance>().ReverseMap();
             //CreateMap<GetAttendaceDTO, UpdateEmployeeAttendance>().ReverseMap();
         }

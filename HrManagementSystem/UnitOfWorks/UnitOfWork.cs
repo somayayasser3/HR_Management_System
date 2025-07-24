@@ -7,6 +7,7 @@ namespace HrManagementSystem.UnitOfWorks
     {
         HRContext con;
         AttendanceRepository attendanceRepo;
+        WorkingTaskRepository workingTaskRepo;
         DepartmentRepository departmentRepo;
         EmployeeRepository employeeRepo;
         GroupPermissionRepository groupPermissionRepo;
@@ -126,6 +127,15 @@ namespace HrManagementSystem.UnitOfWorks
                 if (userGroupRepo == null)
                     userGroupRepo = new UserGroupRepository(con);
                 return userGroupRepo;
+            }
+        }
+        public WorkingTaskRepository WorkingTaskRepo
+        {
+            get
+            {
+                if(workingTaskRepo == null)
+                    workingTaskRepo = new WorkingTaskRepository(con);
+                return workingTaskRepo;
             }
         }
 
