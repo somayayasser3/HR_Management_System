@@ -1,5 +1,7 @@
 ﻿using AutoMapper;
 using HrManagementSystem.DTOs.AttendaceDTOs;
+using HrManagementSystem.DTOs.AuthDTOs;
+using HrManagementSystem.Helper;
 using HrManagementSystem.Models;
 using HrManagementSystem.UnitOfWorks;
 using Microsoft.AspNetCore.Authorization;
@@ -12,7 +14,7 @@ namespace HrManagementSystem.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize]
+    //[Authorize]
     public class AttendanceController : ControllerBase
     {
         UnitOfWork unit;
@@ -68,9 +70,12 @@ namespace HrManagementSystem.Controllers
 
 
         [HttpPost("new")]
-        [Authorize(Roles = "Admin,HR,Employee")]
+        //[Authorize(Roles = "Admin,HR,Employee")]
         public IActionResult AddAttendanceForEmployee(AddEmpAttendance dto)
         {
+            double companyLat = 30.558060;     // latitude of company
+            double companyLong = 31.018865;    // longitude of company
+            double allowedRadius = 100;     
 
             if (dto == null || dto.CheckInTime >= dto.CheckOutTime)
                 return BadRequest(new { message = "Invalid check-in or check-out time." });
@@ -83,6 +88,13 @@ namespace HrManagementSystem.Controllers
                             .ToList();
                 return BadRequest(errors);
             }
+            // get the location and compare it to the company Location 
+            var distance = GeoHelper.CalculateDistanceInMeters(dto.Latitude, dto.Longitude,companyLat, companyLong);
+            if (distance > allowedRadius)
+            {
+                return BadRequest(new { message = "You are outside the allowed location range." });
+            }
+
             TimeSpan requiredCheckIn = new TimeSpan(8, 0, 0); // 8:00 AM
             TimeSpan requiredCheckOut = new TimeSpan(16, 0, 0); // 4:00 PM
 
