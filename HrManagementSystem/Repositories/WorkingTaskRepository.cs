@@ -16,12 +16,17 @@ namespace HrManagementSystem.Repositories
         }
         public async Task<List<WorkingTask>> GetAllTasksWithEmployee()
         {
-            return await con.WorkingTasks.Include(x=>x.Employee).ToListAsync();   
+            return await con.WorkingTasks.Include(x=>x.Employee).ThenInclude(e=>e.Department).ToListAsync();   
         }
         public async Task<WorkingTask> GetTaskByIdWithEmployee(int id)
         {
             return await con.WorkingTasks.Where(t=>t.Id == id).Include(x=>x.Employee).FirstOrDefaultAsync();   
         }
+        public async Task<WorkingTask> SingleWorkingTask(int id)
+        {
+            return await con.WorkingTasks.Where(t=>t.Id == id).Include(x=>x.Employee).ThenInclude(d=>d.Department).FirstOrDefaultAsync();   
+        }
+
 
 
 

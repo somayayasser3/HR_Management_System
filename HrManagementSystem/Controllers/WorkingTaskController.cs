@@ -24,16 +24,21 @@ namespace HrManagementSystem.Controllers
         public async Task<IActionResult> AddNewWorkingTask(AddWorkingTaskDTO dto)
         {
             if (dto == null ) 
-            return BadRequest("Empty task");
+            return BadRequest(new {message=  "Empty task" });
             if (unit.EmployeeRepo.getByID(dto.EmployeeId) == null) 
-            return BadRequest("Employee Not found");
+            return BadRequest(new { message = "Employee Not found" });
+
+            if(dto.DueDate<DateTime.Now.Date)
+                return BadRequest(new { message = "Can't add past date tasks" });
+
             WorkingTask workingTask = mapper.Map<WorkingTask>(dto);
             workingTask.CreatedAt = DateTime.Now;
             workingTask.UpdatedAt = DateTime.Now;
             workingTask.Status = "Pending";
             unit.WorkingTaskRepo.Add(workingTask);
             unit.Save();
-            return Ok( new {message="Task Added"});
+            DisplayWorkingTaskDTO WKT = mapper.Map<DisplayWorkingTaskDTO>(await unit.WorkingTaskRepo.SingleWorkingTask(workingTask.Id));
+            return Ok(WKT);
         }
         [HttpGet("All")]
         [EndpointSummary("Get All Tasks")]

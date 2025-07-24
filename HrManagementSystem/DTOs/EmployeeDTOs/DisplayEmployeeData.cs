@@ -17,6 +17,7 @@ namespace HrManagementSystem.DTOs.Employee
         public decimal Salary { get; set; }
 
         public string DepartmentName { get; set; }
+        public string DepartmentId { get; set; }
 
 
     }
