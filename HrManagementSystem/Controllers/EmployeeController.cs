@@ -84,7 +84,7 @@ namespace HrManagementSystem.Controllers
 
         //////////////////////////////////////////////////////////////
         [HttpPost]
-        [Authorize(Roles = "HR")]
+        [Authorize(Roles = "HR,Admin")]
         [EndpointSummary("Add Employee/User ")]
         public async Task<IActionResult> AddEmployeeAsync(AddEmployee Emp)
         {
@@ -118,8 +118,6 @@ namespace HrManagementSystem.Controllers
                 Directory.CreateDirectory(uploadsFolder);
             var filePath = Path.Combine(uploadsFolder, uniqueFileName);
             MappedEmployee.ImagePath = filePath;
-            unit.EmployeeRepo.Add(MappedEmployee);
-            unit.Save();
 
             // Save the file
             using (var stream = new FileStream(filePath, FileMode.Create))
@@ -138,7 +136,7 @@ namespace HrManagementSystem.Controllers
             };
             unit.EmployeeLeaveBalanceRepo.Add(leaveBalance);
             unit.Save();
-            return Ok("Employee Added Successfully");
+            return Ok(new {message = "Employee Added Successfully" });
         }
 
         [HttpPut("{id}")]
@@ -168,7 +166,7 @@ namespace HrManagementSystem.Controllers
             unit.EmployeeRepo.Update(existingEmployee);
             unit.Save();
 
-            return Ok("Edited Successfully");
+            return Ok(new {message = "Updated Successfully"});
 
         }
 
