@@ -38,7 +38,7 @@ namespace HrManagementSystem.Controllers
             GetSalaryReportDTO empSalaryReport = mapper.Map<GetSalaryReportDTO>(await unit.SalaryReportRepo.GetSalaryMonthReportWithEmployee(salaryReportInfo.Month, salaryReportInfo.Year, salaryReportInfo.EmployeeId));
             if (empSalaryReport == null)
             {
-                return BadRequest("Something went wrong");
+                return BadRequest(new { message = "Something went wrong" });
             }
 
             return Ok(empSalaryReport);
@@ -51,9 +51,10 @@ namespace HrManagementSystem.Controllers
             List<GetSalaryReportDTO> empSalaryReport =  mapper.Map<List<GetSalaryReportDTO>>(unit.SalaryReportRepo.GetAllReportsForEmp(empid));
             if (empSalaryReport == null)
             {
-                return BadRequest("Something went wrong");
+                return BadRequest(new { message = "Something went wrong" });
+
             }
-           
+
             return Ok(empSalaryReport);
         }
         [HttpDelete("delete/{id}")]
@@ -64,7 +65,7 @@ namespace HrManagementSystem.Controllers
             GetSalaryReportDTO report = mapper.Map<GetSalaryReportDTO>(unit.SalaryReportRepo.getByID(id));
             if (report == null) 
             { 
-            return NotFound("Report Not Found");
+            return NotFound(new { message = "Report Not Found" });
             }
             unit.SalaryReportRepo.Delete(id);
             unit.Save();
@@ -78,7 +79,7 @@ namespace HrManagementSystem.Controllers
          [FromServices] SalaryReportServiceEF salaryReportService)
         {
             await salaryReportService.GenerateSalaryReportsAsync();
-            return Ok("Monthly salary reports generated suc cessfully.");
+            return Ok(new { message = "Monthly salary reports generated suc cessfully." });
         }
 
         [HttpPost("generateEMP")]
@@ -88,7 +89,7 @@ namespace HrManagementSystem.Controllers
          [FromServices] SalaryReportServiceEF salaryReportService , int m,int y , int id)
         {
             await salaryReportService.GenerateMonthlySalaryReportForEmployee(m,y,id);
-            return Ok("Monthly salary reports generated suc cessfully.");
+            return Ok(new { message = "Monthly salary reports generated suc cessfully." });
         }
 
 
@@ -98,7 +99,7 @@ namespace HrManagementSystem.Controllers
          [FromServices] SalaryReportServiceEF salaryReportService, int m, int y)
         {
             await salaryReportService.GenerateMonthlySalaryReportForAllEmployeesInSpecificDate22(m, y);
-            return Ok("Monthly salary reports generated suc cessfully.");
+            return Ok(new { message = "Monthly salary reports generated suc cessfully." });
         }
     }
 }

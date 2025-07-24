@@ -55,7 +55,7 @@ namespace HrManagementSystem.Controllers
             var employee = unit.EmployeeRepo.GetEmployeeByUserId(userId);
 
             if (employee == null)
-                return NotFound("Employee profile not found");
+                return NotFound(new {  message = "Employee profile not found" });
 
             var mappedEmployee = mapper.Map<DisplayEmployeeData>(employee);
             return Ok(mappedEmployee);
@@ -70,7 +70,7 @@ namespace HrManagementSystem.Controllers
             var employee = unit.EmployeeRepo.getAll().FirstOrDefault(e => e.UserId == userId);
 
             if (employee == null)
-                return NotFound("Employee profile not found");
+                return NotFound(new {  message = "Employee profile not found" });
 
             employee.Address = updateDto.Address;
             employee.PhoneNumber = updateDto.PhoneNumber;
@@ -152,7 +152,7 @@ namespace HrManagementSystem.Controllers
 
             var existingUser = await _userManager.FindByIdAsync(existingEmployee.UserId.ToString());
             if (existingUser == null)
-                return NotFound("Linked User not found");
+                return NotFound(new {  message = "Linked User not found" });
 
             //mapper.Map<UpdateEmployeeDTO, User>(Emp, existingUser);
 
