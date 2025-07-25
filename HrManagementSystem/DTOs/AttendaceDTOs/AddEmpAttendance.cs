@@ -13,9 +13,9 @@ namespace HrManagementSystem.DTOs.AttendaceDTOs
         [Required]
         [DefaultValue(typeof(TimeSpan), "8:00:00")]
         public TimeSpan CheckInTime { get; set; } 
-        [Required]
-        [DefaultValue(typeof(TimeSpan), "16:00:00")]
-        public TimeSpan? CheckOutTime { get; set; }
+        //[Required]
+        //[DefaultValue(typeof(TimeSpan), "16:00:00")]
+        //public TimeSpan? CheckOutTime { get; set; }
 
         [Required]
         public double Latitude { get; set; }

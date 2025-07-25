@@ -4,6 +4,7 @@ using HrManagementSystem.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace HrManagementSystem.Migrations
 {
     [DbContext(typeof(HRContext))]
-    partial class HRContextModelSnapshot : ModelSnapshot
+    [Migration("20250725120631_UniquenessForPhoneAndNationalID")]
+    partial class UniquenessForPhoneAndNationalID
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -58,7 +61,7 @@ namespace HrManagementSystem.Migrations
 
                     b.HasIndex("EmployeeId");
 
-                    b.ToTable("Attendances", (string)null);
+                    b.ToTable("Attendances");
                 });
 
             modelBuilder.Entity("HrManagementSystem.Models.ChatMessage", b =>
@@ -82,7 +85,7 @@ namespace HrManagementSystem.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("ChatMessages", (string)null);
+                    b.ToTable("ChatMessages");
                 });
 
             modelBuilder.Entity("HrManagementSystem.Models.Department", b =>
@@ -111,7 +114,7 @@ namespace HrManagementSystem.Migrations
 
                     b.HasKey("DepartmentId");
 
-                    b.ToTable("Departments", (string)null);
+                    b.ToTable("Departments");
                 });
 
             modelBuilder.Entity("HrManagementSystem.Models.Employee", b =>
@@ -188,7 +191,7 @@ namespace HrManagementSystem.Migrations
                     b.HasIndex("UserId")
                         .IsUnique();
 
-                    b.ToTable("Employees", (string)null);
+                    b.ToTable("Employees");
                 });
 
             modelBuilder.Entity("HrManagementSystem.Models.EmployeeLeaveBalance", b =>
@@ -207,7 +210,7 @@ namespace HrManagementSystem.Migrations
 
                     b.HasKey("EmployeeId");
 
-                    b.ToTable("EmployeeLeaveBalances", (string)null);
+                    b.ToTable("EmployeeLeaveBalances");
                 });
 
             modelBuilder.Entity("HrManagementSystem.Models.GroupPermission", b =>
@@ -222,7 +225,7 @@ namespace HrManagementSystem.Migrations
 
                     b.HasIndex("PermissionId");
 
-                    b.ToTable("GroupPermissions", (string)null);
+                    b.ToTable("GroupPermissions");
                 });
 
             modelBuilder.Entity("HrManagementSystem.Models.LeaveRequest", b =>
@@ -262,7 +265,7 @@ namespace HrManagementSystem.Migrations
 
                     b.HasIndex("LeaveTypeId");
 
-                    b.ToTable("LeaveRequests", (string)null);
+                    b.ToTable("LeaveRequests");
                 });
 
             modelBuilder.Entity("HrManagementSystem.Models.LeaveType", b =>
@@ -282,7 +285,7 @@ namespace HrManagementSystem.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("LeaveTypes", (string)null);
+                    b.ToTable("LeaveTypes");
 
                     b.HasData(
                         new
@@ -334,7 +337,7 @@ namespace HrManagementSystem.Migrations
 
                     b.HasKey("HolidayId");
 
-                    b.ToTable("OfficialHolidays", (string)null);
+                    b.ToTable("OfficialHolidays");
                 });
 
             modelBuilder.Entity("HrManagementSystem.Models.Permission", b =>
@@ -366,7 +369,7 @@ namespace HrManagementSystem.Migrations
 
                     b.HasKey("PermissionId");
 
-                    b.ToTable("Permissions", (string)null);
+                    b.ToTable("Permissions");
                 });
 
             modelBuilder.Entity("HrManagementSystem.Models.SalaryReport", b =>
@@ -408,7 +411,7 @@ namespace HrManagementSystem.Migrations
 
                     b.HasIndex("EmployeeId");
 
-                    b.ToTable("SalaryReports", (string)null);
+                    b.ToTable("SalaryReports");
                 });
 
             modelBuilder.Entity("HrManagementSystem.Models.SystemSetting", b =>
@@ -443,7 +446,7 @@ namespace HrManagementSystem.Migrations
 
                     b.HasKey("SettingId");
 
-                    b.ToTable("SystemSettings", (string)null);
+                    b.ToTable("SystemSettings");
                 });
 
             modelBuilder.Entity("HrManagementSystem.Models.User", b =>
@@ -567,7 +570,7 @@ namespace HrManagementSystem.Migrations
 
                     b.HasKey("GroupId");
 
-                    b.ToTable("UserGroups", (string)null);
+                    b.ToTable("UserGroups");
                 });
 
             modelBuilder.Entity("HrManagementSystem.Models.WorkingTask", b =>
@@ -603,7 +606,7 @@ namespace HrManagementSystem.Migrations
 
                     b.HasIndex("EmployeeId");
 
-                    b.ToTable("WorkingTasks", (string)null);
+                    b.ToTable("WorkingTasks");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole<int>", b =>

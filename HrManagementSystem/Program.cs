@@ -54,6 +54,7 @@ namespace HrManagementSystem
                 options.Password.RequireUppercase = true;
                 options.Password.RequireLowercase = true;
                 options.User.RequireUniqueEmail = true;
+                
             })
             .AddEntityFrameworkStores<HRContext>()
             .AddDefaultTokenProviders();

@@ -45,7 +45,7 @@ namespace HrManagementSystem.Controllers
 
         [HttpPost]
         [EndpointSummary("Add Official Holiday")]
-        [Authorize(Roles = "HR")]
+        [Authorize(Roles = "Admin,HR")]
         public IActionResult AddOfficialHoliday( OfficialHolidayDisplayDTO holidayDisplayDTO)
         {
             
@@ -61,7 +61,7 @@ namespace HrManagementSystem.Controllers
 
         [HttpPut("{id}")]
         [EndpointSummary("Edit an existing Official Holiday")]
-        [Authorize(Roles = "HR")]
+        [Authorize(Roles = "Admin,HR")]
         public IActionResult EditOfficialHoliday(int id, OfficialHolidayDisplayDTO officialHolidayDisplay)
         {
             var existingHoliday = unit.OfficialHolidayRepo.getByID(id);
@@ -78,7 +78,7 @@ namespace HrManagementSystem.Controllers
         }
 
         [HttpDelete("{id}")]
-        [Authorize(Roles = "HR")]
+        [Authorize(Roles = "Admin,HR")]
         [EndpointSummary("Delete an existing Official Holiday")]
         public IActionResult DeleteOfficialHoliday(int id)
         {

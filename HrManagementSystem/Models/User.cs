@@ -19,7 +19,7 @@ namespace HrManagementSystem.Models
         [MaxLength(200)]
         public string Address { get; set; }
 
-        [MaxLength(20)]
+        [MaxLength(13)]
         public string PhoneNumber { get; set; }
 
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;

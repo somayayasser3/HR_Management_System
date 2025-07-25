@@ -42,6 +42,7 @@ namespace HrManagementSystem.Controllers
         [EndpointSummary("Register HR (Admin only)")]
         public async Task<IActionResult> RegisterHR([FromForm] AddEmployee registerDto)
         {
+            
             try
             {
                 var response = await _authService.RegisterHRAsync(registerDto);

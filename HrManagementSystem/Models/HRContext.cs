@@ -88,12 +88,15 @@ namespace HrManagementSystem.Models
                 .WithMany(p => p.GroupPermissions)
                 .HasForeignKey(gp => gp.PermissionId)
                 .OnDelete(DeleteBehavior.Cascade);
-          
+
             modelBuilder.Entity<LeaveType>().HasData(
             new LeaveType { Id = 1, Name = "Annual", MaxDaysPerYear = 21 },
             new LeaveType { Id = 2, Name = "Sick", MaxDaysPerYear = 15 },
             new LeaveType { Id = 3, Name = "Unpaid", MaxDaysPerYear = 0 }
-            );
+                        );
+            modelBuilder.Entity<User>().HasIndex(m => m.PhoneNumber).IsUnique();
+            modelBuilder.Entity<Employee>().HasIndex(m => m.PhoneNumber).IsUnique();
+            modelBuilder.Entity<Employee>().HasIndex(m => m.NationalId).IsUnique();
         }
     }
 

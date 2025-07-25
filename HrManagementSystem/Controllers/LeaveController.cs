@@ -49,7 +49,7 @@ namespace HrManagementSystem.Controllers
             DateTime end = request.EndDate.ToDateTime(TimeOnly.MinValue);
             DateTime today = DateTime.Today;
             //  if Entered Past Date
-            if (start < today || end < today)
+            if (start < today || end < today  || request.EndDate<request.StartDate  )
             {
                 return BadRequest(new { message = "You cannot request leave for a past date." });
             }

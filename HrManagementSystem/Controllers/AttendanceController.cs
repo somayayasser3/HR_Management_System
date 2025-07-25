@@ -73,11 +73,11 @@ namespace HrManagementSystem.Controllers
         //[Authorize(Roles = "Admin,HR,Employee")]
         public IActionResult AddAttendanceForEmployee(AddEmpAttendance dto)
         {
-            double companyLat = 30.558060;     // latitude of company
-            double companyLong = 31.018865;    // longitude of company
+            double companyLat = 30.47852573059691;     // latitude of company
+            double companyLong = 31.192305498868247;    // longitude of company
             double allowedRadius = 100;     
 
-            if (dto == null || dto.CheckInTime >= dto.CheckOutTime)
+            if (dto == null /*|| dto.CheckInTime > dto.CheckOutTime*/)
                 return BadRequest(new { message = "Invalid check-in or check-out time." });
             if (!ModelState.IsValid)
             {
@@ -99,14 +99,14 @@ namespace HrManagementSystem.Controllers
             TimeSpan requiredCheckOut = new TimeSpan(16, 0, 0); // 4:00 PM
 
             TimeSpan actualCheckIn = dto.CheckInTime;
-            TimeSpan? actualCheckOut = dto.CheckOutTime;
+            //TimeSpan? actualCheckOut = dto.CheckOutTime;
             decimal DelayHours = 0;
             decimal OvertimeHours = 0;
             if (dto.CheckInTime > requiredCheckIn)
                 DelayHours = (decimal)(actualCheckIn - requiredCheckIn).TotalHours;
 
-            if (dto.CheckOutTime > requiredCheckOut)
-                OvertimeHours = (decimal)(actualCheckOut - requiredCheckOut)?.TotalHours;
+            //if (dto.CheckOutTime > requiredCheckOut)
+            //    OvertimeHours = (decimal)(actualCheckOut - requiredCheckOut)?.TotalHours;
           
 
             Attendance newAttendance = mapper.Map<Attendance>(dto);
@@ -133,10 +133,10 @@ namespace HrManagementSystem.Controllers
         {
 
 
-            //double companyLat = 30.558060;     // latitude of company
-            double companyLat = 30.550334;     // latitude of company
-            //double companyLong = 31.018865;    // longitude of company
-            double companyLong = 31.0106341;    // longitude of company
+            //double companyLat = 30.550334;     // latitude of company
+            //double companyLong = 31.0106341;    // longitude of company
+            double companyLat = 30.47852573059691;     // latitude of company
+            double companyLong = 31.192305498868247;    // longitude of company
             double allowedRadius = 100;
 
             Attendance AttendanceToUpdate = unit.AttendanceRepo.GetSingleAttendanceForEmployeeByEmployeeIdandDate(dto.EmployeeId, DateTime.Now.Date);
@@ -182,6 +182,36 @@ namespace HrManagementSystem.Controllers
             {
                 return BadRequest(new { message = "Try again" });
             }
+        }
+
+        [HttpPut("Updateatt")]
+        public IActionResult AdminUpdatesAttendance(AdminUpdatesAttendanceDTO att)
+        {
+            Attendance oldAttendance  = unit.AttendanceRepo.getByID(att.AttendanceId);
+            if (att == null || att.CheckInTime > att.CheckOutTime)
+                return BadRequest(new { message = "Invalid check-in or check-out time." });
+            if(att.AttendanceDate > DateTime.Now.Date)
+                return BadRequest(new { message = "Invalid check-in or check-out time." });
+
+            TimeSpan requiredCheckIn = new TimeSpan(8, 0, 0); // 8:00 AM
+            TimeSpan requiredCheckOut = new TimeSpan(16, 0, 0); // 4:00 PM
+
+            TimeSpan actualCheckIn = att.CheckInTime;
+            TimeSpan? actualCheckOut = att.CheckOutTime;
+            decimal DelayHours = 0;
+            decimal OvertimeHours = 0;
+            if (att.CheckInTime > requiredCheckIn)
+                att.DelayHours = (decimal)(actualCheckIn - requiredCheckIn).TotalHours;
+            else
+                att.DelayHours = 0;
+
+            if (att.CheckOutTime > requiredCheckOut)
+                att.OvertimeHours = (decimal)(actualCheckOut - requiredCheckOut)?.TotalHours;
+            mapper.Map(att, oldAttendance);
+            unit.AttendanceRepo.Update(oldAttendance);
+            unit.Save();    
+            
+            return Ok(att);
         }
 
         [HttpDelete("delete/{id}")]

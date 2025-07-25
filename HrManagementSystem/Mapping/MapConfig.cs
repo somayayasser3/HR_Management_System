@@ -69,6 +69,8 @@ namespace HrManagementSystem.Mapping
             }).ReverseMap();
             CreateMap<AdminUpdatesTaskDTO, WorkingTask>().ReverseMap();
             CreateMap<UpdateEmployeeDTO, Employee>().ReverseMap();
+            CreateMap<UpdateEmployeeDTO, User>().ReverseMap();
+            CreateMap<AdminUpdatesAttendanceDTO, Attendance>().ReverseMap();
             //CreateMap<GetAttendaceDTO, AddEmpAttendance>().ReverseMap();
             //CreateMap<GetAttendaceDTO, UpdateEmployeeAttendance>().ReverseMap();
         }

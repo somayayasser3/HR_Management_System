@@ -81,7 +81,18 @@ namespace HrManagementSystem.Services
             var existingUser = await _userManager.FindByEmailAsync(registerHREmployee.Email);
             if (existingUser != null)
             {
-                throw new InvalidOperationException("User already exists");
+                throw new InvalidOperationException("DuplicateEmail");
+            }
+
+            var existingUserWithPhone = _unitOfWork.EmployeeRepo.GetExistingByPhoneNumber(registerHREmployee.PhoneNumber);
+            if (existingUserWithPhone != null)
+            {
+                throw new InvalidOperationException("Duplicate phone number"); ;
+            }
+            var existingUserWithNatID = _unitOfWork.EmployeeRepo.GetExistingByNationalID(registerHREmployee.NationalId);
+            if (existingUserWithNatID != null)
+            {
+                throw new InvalidOperationException("Duplicate National ID");
             }
 
             var user = mapper.Map<User>(registerHREmployee);

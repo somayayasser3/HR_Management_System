@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
 using static System.Net.Mime.MediaTypeNames;
 
@@ -74,13 +75,17 @@ namespace HrManagementSystem.Controllers
             if (employee == null)
                 return NotFound(new {  message = "Employee profile not found" });
 
+            var existingUserWithPhone = unit.EmployeeRepo.GetAnotherExistingByPhoneNumber(employee.EmployeeId, updateDto.PhoneNumber);
+            if (existingUserWithPhone != null)
+            {
+                return BadRequest(new { message = "Duplicate phone number" });
+            }
+
             employee.Address = updateDto.Address;
             employee.PhoneNumber = updateDto.PhoneNumber;
             employee.UpdatedAt = DateTime.UtcNow;
-
             unit.EmployeeRepo.Update(employee);
             unit.Save();
-
             return Ok(new { message = "Profile updated successfully" });
         }
 
@@ -93,8 +98,19 @@ namespace HrManagementSystem.Controllers
             var user = mapper.Map<User>(Emp);
             user.Role = UserRole.Employee; // Set the role to Employee
 
-            var AddUser = await _userManager.CreateAsync(user, Emp.Password);
+            var existingUserWithPhone = unit.EmployeeRepo.GetExistingByPhoneNumber(Emp.PhoneNumber);
+            if (existingUserWithPhone != null)
+            {
+                return BadRequest(new { message = "Duplicate phone number" });
+            }
+            var existingUserWithNatID = unit.EmployeeRepo.GetExistingByNationalID(Emp.NationalId);
+            if (existingUserWithNatID != null)
+            {
+                return BadRequest(new { message = "Duplicate National ID" });
+            }
 
+
+            var AddUser = await _userManager.CreateAsync(user, Emp.Password);
             if (!AddUser.Succeeded)
                 return BadRequest(AddUser.Errors);
 
@@ -151,14 +167,25 @@ namespace HrManagementSystem.Controllers
             if (existingEmployee == null)
                 return NotFound();
 
+            var existingUserWithPhone = unit.EmployeeRepo.GetAnotherExistingByPhoneNumber(Emp.EmployeeId, Emp.PhoneNumber);
+            if (existingUserWithPhone != null)
+            {
+                return BadRequest(new { message = "Duplicate phone number" });
+            }
+            var existingUserWithNatID = unit.EmployeeRepo.GetAnotherExistingByNationalID(Emp.EmployeeId, Emp.NationalId);
+            if (existingUserWithNatID != null)
+            {
+                return BadRequest(new { message = "Duplicate National ID" });
+            }
+
+
             string path = existingEmployee.ImagePath;
 
             var existingUser = await _userManager.FindByIdAsync(existingEmployee.UserId.ToString());
             if (existingUser == null)
                 return NotFound(new {  message = "Linked User not found" });
 
-            //mapper.Map<UpdateEmployeeDTO, User>(Emp, existingUser);
-
+            mapper.Map<UpdateEmployeeDTO, User>(Emp, existingUser);
             var userUpdate = await _userManager.UpdateAsync(existingUser);
             if (!userUpdate.Succeeded)
                 return BadRequest(userUpdate.Errors);
@@ -168,7 +195,6 @@ namespace HrManagementSystem.Controllers
             existingEmployee.ImagePath = path;
             unit.EmployeeRepo.Update(existingEmployee);
             unit.Save();
-
             return Ok(new {message = "Updated Successfully"});
 
         }

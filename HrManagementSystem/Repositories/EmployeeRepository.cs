@@ -28,7 +28,23 @@ namespace HrManagementSystem.Repositories
 
             return con.Employees.Include(e => e.Department).Include(e => e.User).Include(e => e.LeaveBalance).Include(e => e.Attendances).Where(e => e.UserId == id).FirstOrDefault();
         }
-       
+        
+        public Employee GetAnotherExistingByPhoneNumber(int id , string phone)
+        {
+            return con.Employees.Where(x => x.EmployeeId != id && x.PhoneNumber == phone).FirstOrDefault();
+        }
+        public Employee GetAnotherExistingByNationalID(int id , string nat)
+        {
+            return con.Employees.Where(x => x.EmployeeId != id && x.NationalId== nat).FirstOrDefault();
+        }
+        public Employee GetExistingByPhoneNumber(string phone)
+        {
+            return con.Employees.Where(x=>x.PhoneNumber == phone).FirstOrDefault();
+        }
+        public Employee GetExistingByNationalID( string nat)
+        {
+            return con.Employees.Where(x => x.NationalId== nat).FirstOrDefault();
+        }
 
 
     }

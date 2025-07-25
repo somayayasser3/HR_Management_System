@@ -320,7 +320,7 @@ namespace HrManagementSystem.Controllers
                                     .Select(e => new
                                     {
                                         e.FullName,
-                                        e.User.Email,
+                                        //e.User.Email,
                                         e.Salary,
                                         Department = e.Department != null ? e.Department.DepartmentName : "N/A",
                                         e.PhoneNumber
