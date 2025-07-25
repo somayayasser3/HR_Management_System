@@ -120,6 +120,8 @@ namespace HrManagementSystem.Controllers
                 Directory.CreateDirectory(uploadsFolder);
             var filePath = Path.Combine(uploadsFolder, uniqueFileName);
             MappedEmployee.ImagePath = filePath;
+            unit.EmployeeRepo.Add(MappedEmployee);
+            unit.Save();
 
             // Save the file
             using (var stream = new FileStream(filePath, FileMode.Create))

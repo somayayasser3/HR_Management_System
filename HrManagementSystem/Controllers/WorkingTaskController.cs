@@ -84,6 +84,9 @@ namespace HrManagementSystem.Controllers
             WorkingTask task = unit.WorkingTaskRepo.getByID(dto.TaskId);
             if (task==null)
                 return BadRequest(new { message = "No such task" });
+            if (DateTime.Now.Date > task.DueDate.Date)
+                dto.Status = "Late";
+
             task.Status = dto.Status;
             task.UpdatedAt = DateTime.Now;
             unit.WorkingTaskRepo.Update(task);

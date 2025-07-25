@@ -27,7 +27,7 @@ namespace HrManagementSystem.Controllers
         [HttpGet("all")]
         [Authorize(Roles = "Admin,HR")]
         public IActionResult GetAllAttendance()
-        {
+            {
             List<GetAttendaceDTO> AllEmpsAttendance = mapper.Map<List<GetAttendaceDTO>>(unit.AttendanceRepo.GetAttendanceWithEmployees());
             if (AllEmpsAttendance.Count == 0)
             {
