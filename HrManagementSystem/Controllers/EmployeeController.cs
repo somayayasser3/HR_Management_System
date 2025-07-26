@@ -58,7 +58,7 @@ namespace HrManagementSystem.Controllers
             //var employee = unit.EmployeeRepo.getAll().FirstOrDefault(e => e.UserId == userId);
 
             if (employee == null)
-                return NotFound(new {  message = "Employee profile not found" });
+                return NotFound(new { message = "Employee profile not found" });
 
             var mappedEmployee = mapper.Map<DisplayEmployeeData>(employee);
             return Ok(mappedEmployee);
@@ -73,20 +73,27 @@ namespace HrManagementSystem.Controllers
             var employee = unit.EmployeeRepo.getAll().FirstOrDefault(e => e.UserId == userId);
 
             if (employee == null)
-                return NotFound(new {  message = "Employee profile not found" });
+                return NotFound(new { message = "Employee profile not found" });
 
             var existingUserWithPhone = unit.EmployeeRepo.GetAnotherExistingByPhoneNumber(employee.EmployeeId, updateDto.PhoneNumber);
             if (existingUserWithPhone != null)
             {
                 return BadRequest(new { message = "Duplicate phone number" });
             }
+            try
+            {
 
-            employee.Address = updateDto.Address;
-            employee.PhoneNumber = updateDto.PhoneNumber;
-            employee.UpdatedAt = DateTime.UtcNow;
-            unit.EmployeeRepo.Update(employee);
-            unit.Save();
-            return Ok(new { message = "Profile updated successfully" });
+                employee.Address = updateDto.Address;
+                employee.PhoneNumber = updateDto.PhoneNumber;
+                employee.UpdatedAt = DateTime.UtcNow;
+                unit.EmployeeRepo.Update(employee);
+                unit.Save();
+                return Ok(new { message = "Profile updated successfully" });
+            }
+            catch (Exception)
+            {
+                return BadRequest(new { message = "Try again" });
+            }
         }
 
         //////////////////////////////////////////////////////////////
@@ -109,12 +116,19 @@ namespace HrManagementSystem.Controllers
                 return BadRequest(new { message = "Duplicate National ID" });
             }
 
+            try
+            {
+                var AddUser = await _userManager.CreateAsync(user, Emp.Password);
+                if (!AddUser.Succeeded)
+                    return BadRequest(AddUser.Errors);
+                await _userManager.AddToRoleAsync(user, (UserRole.Employee).ToString());
 
-            var AddUser = await _userManager.CreateAsync(user, Emp.Password);
-            if (!AddUser.Succeeded)
-                return BadRequest(AddUser.Errors);
+            }
+            catch (Exception)
+            {
+                return BadRequest(new { message = "Try again" });
+            }
 
-            await _userManager.AddToRoleAsync(user, (UserRole.Employee).ToString());
 
             var MappedEmployee = mapper.Map<Employee>(Emp);
             MappedEmployee.UserId = user.Id;
@@ -136,16 +150,23 @@ namespace HrManagementSystem.Controllers
                 Directory.CreateDirectory(uploadsFolder);
             var filePath = Path.Combine(uploadsFolder, uniqueFileName);
             MappedEmployee.ImagePath = filePath;
-            unit.EmployeeRepo.Add(MappedEmployee);
-            unit.Save();
+            try
+            {
+                unit.EmployeeRepo.Add(MappedEmployee);
+                unit.Save();
+            }
+            catch (Exception)
+            {
+                return BadRequest(new { message = "Try again" });
+            }
 
             // Save the file
             using (var stream = new FileStream(filePath, FileMode.Create))
             {
                 await Emp.Image.CopyToAsync(stream);
             }
-            
-           
+
+
             var leaveBalance = new EmployeeLeaveBalance
             {
                 EmployeeId = MappedEmployee.EmployeeId,
@@ -153,9 +174,16 @@ namespace HrManagementSystem.Controllers
                 SickLeaveBalance = 15,
                 UnpaidLeaveBalance = 0
             };
-            unit.EmployeeLeaveBalanceRepo.Add(leaveBalance);
-            unit.Save();
-            return Ok(new {message = "Employee Added Successfully" });
+            try
+            {
+                unit.EmployeeLeaveBalanceRepo.Add(leaveBalance);
+                unit.Save();
+                return Ok(new { message = "Employee Added Successfully" });
+            }
+            catch (Exception)
+            {
+                return BadRequest(new { message = "Try again" });
+            }
         }
 
         [HttpPut("{id}")]
@@ -180,25 +208,32 @@ namespace HrManagementSystem.Controllers
 
 
             string path = existingEmployee.ImagePath;
+            try
+            {
 
-            var existingUser = await _userManager.FindByIdAsync(existingEmployee.UserId.ToString());
-            if (existingUser == null)
-                return NotFound(new {  message = "Linked User not found" });
+                var existingUser = await _userManager.FindByIdAsync(existingEmployee.UserId.ToString());
+                if (existingUser == null)
+                    return NotFound(new { message = "Linked User not found" });
 
-            mapper.Map<UpdateEmployeeDTO, User>(Emp, existingUser);
-            var userUpdate = await _userManager.UpdateAsync(existingUser);
-            if (!userUpdate.Succeeded)
-                return BadRequest(userUpdate.Errors);
+                mapper.Map<UpdateEmployeeDTO, User>(Emp, existingUser);
+                var userUpdate = await _userManager.UpdateAsync(existingUser);
+                if (!userUpdate.Succeeded)
+                    return BadRequest(userUpdate.Errors);
 
-            mapper.Map<UpdateEmployeeDTO, Employee>(Emp, existingEmployee);
-            existingEmployee.UpdatedAt = DateTime.Now;
-            existingEmployee.ImagePath = path;
-            unit.EmployeeRepo.Update(existingEmployee);
-            unit.Save();
-            return Ok(new {message = "Updated Successfully"});
+                mapper.Map<UpdateEmployeeDTO, Employee>(Emp, existingEmployee);
+                existingEmployee.UpdatedAt = DateTime.Now;
+                existingEmployee.ImagePath = path;
+                unit.EmployeeRepo.Update(existingEmployee);
+                unit.Save();
+                return Ok(new { message = "Updated Successfully" });
+            }
+            catch (Exception)
+            {
+                return BadRequest(new { message = "Try again" });
+            }
 
         }
-        
+
 
         [HttpDelete("{id}")]
         [Authorize(Roles = "HR,Admin")]
@@ -208,19 +243,22 @@ namespace HrManagementSystem.Controllers
             var employee = unit.EmployeeRepo.getByID(id);
             if (employee == null)
                 return NotFound();
-
-            unit.EmployeeRepo.Delete(id);
-            unit.Save();
-
-            var user = _userManager.FindByIdAsync(employee.UserId.ToString()).Result;
-            if (user != null)
+            try
             {
-                _userManager.DeleteAsync(user).Wait();
+                unit.EmployeeRepo.Delete(id);
+                unit.Save();
+                var user = _userManager.FindByIdAsync(employee.UserId.ToString()).Result;
+                if (user != null)
+                {
+                    _userManager.DeleteAsync(user).Wait();
+                }
+                return Ok(employee);
+            }
+            catch (Exception)
+            {
+                return BadRequest(new { message = "Try again" });
             }
 
-            // soft delete the user should have the its data still in system 
-
-            return Ok(employee);
         }
     }
 }

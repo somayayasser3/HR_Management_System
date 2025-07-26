@@ -14,7 +14,7 @@ namespace HrManagementSystem.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    //[Authorize]
+    [Authorize]
     public class AttendanceController : ControllerBase
     {
         UnitOfWork unit;
@@ -70,7 +70,7 @@ namespace HrManagementSystem.Controllers
 
 
         [HttpPost("new")]
-        //[Authorize(Roles = "Admin,HR,Employee")]
+        [Authorize(Roles = "Admin,HR,Employee")]
         public IActionResult AddAttendanceForEmployee(AddEmpAttendance dto)
         {
             double companyLat = 30.47852573059691;     // latitude of company
@@ -207,11 +207,19 @@ namespace HrManagementSystem.Controllers
 
             if (att.CheckOutTime > requiredCheckOut)
                 att.OvertimeHours = (decimal)(actualCheckOut - requiredCheckOut)?.TotalHours;
+            try
+            {
             mapper.Map(att, oldAttendance);
             unit.AttendanceRepo.Update(oldAttendance);
             unit.Save();    
-            
             return Ok(att);
+
+            }
+            catch(Exception ex)
+            {
+                return BadRequest(new { message = "Try again" });
+            }
+            
         }
 
         [HttpDelete("delete/{id}")]
@@ -223,9 +231,16 @@ namespace HrManagementSystem.Controllers
             {
                 return BadRequest(new { message = "Wrong ID" });
             }
+            try
+            {
             unit.AttendanceRepo.Delete(id);
             unit.Save();
             return Ok(new { message = "Deleted" });
+            }
+            catch(Exception ex)
+            {
+                return BadRequest(new { message = "Try again" });
+            }
         }
 
 

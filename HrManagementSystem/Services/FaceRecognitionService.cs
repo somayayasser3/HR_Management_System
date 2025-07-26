@@ -1,10 +1,28 @@
-﻿using HrManagementSystem.Controllers;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using System.Net.Http;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace HrManagementSystem.Services
 {
+    public class FaceComparisonResponse
+    {
+        public bool Success { get; set; }
+        public bool IsSamePerson { get; set; }
+        public double Confidence { get; set; }
+        public double Distance { get; set; }
+        public string Message { get; set; } = string.Empty;
+        public string? Error { get; set; }
+    }
+    public class CompareFacesDto
+    {
+        //[Required]
+        [JsonPropertyName("image1")]
+        public IFormFile Image1 { get; set; }
+        //[Required]
+        [JsonPropertyName("image2")]
+        public IFormFile Image2 { get; set; }
+    }
     public class FaceRecognitionService : IFaceRecognitionService
     {
         private readonly HttpClient http;

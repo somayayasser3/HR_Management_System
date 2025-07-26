@@ -45,6 +45,10 @@ namespace HrManagementSystem.Repositories
         {
             return con.Employees.Where(x => x.NationalId== nat).FirstOrDefault();
         }
+        public List<Employee> GetEmployeesByDeptId( int id)
+        {
+            return con.Employees.Where(x => x.DepartmentId == id).ToList();
+        }
 
 
     }

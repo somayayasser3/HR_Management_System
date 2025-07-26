@@ -74,10 +74,16 @@ namespace HrManagementSystem.Controllers
                 case "unpaid":
                     break;
             }
-
+            try
+            {
             unit.LeaveRepo.Add(request);
             unit.Save();
             return Ok(new { message = " Request added successfully" });
+            }
+            catch (Exception)
+            {
+                return BadRequest(new { message = "Try again" });
+            }
 
         }
            
@@ -111,36 +117,29 @@ namespace HrManagementSystem.Controllers
                             employeeLeaveBalance.UnpaidLeaveBalance += days;
                             break;
                     }
-                    //if (request.Status.ToLower() != "rejected")
-                    //{
-                    //    for (int i = 0; i < days; i++)
-                    //    {
-                    //        var leaveDate = request.StartDate.ToDateTime(TimeOnly.MinValue).AddDays(i);
-                    //        var attendance = new Attendance
-                    //        {
-                    //            EmployeeId = request.EmployeeId,
-                    //            AttendanceDate = leaveDate,
-                    //            CheckInTime = employeeLeaveBalance.Employee.WorkStartTime.TimeOfDay,
-                    //            CheckOutTime = employeeLeaveBalance.Employee.WorkEndTime.TimeOfDay,
-                    //            OvertimeHours = 0,
-                    //            DelayHours = 0,
-                    //            CreatedAt = DateTime.UtcNow,
-                    //            UpdatedAt = DateTime.UtcNow
-                    //        };
-
-                    //        unit.AttendanceRepo.Add(attendance);
-                    //    }
-
-                    //}
+                    try
+                    {
                     unit.EmployeeLeaveBalanceRepo.Update(employeeLeaveBalance);
+                    }
+                    catch (Exception)
+                    {
+                        return BadRequest(new { message = "Try again" });
+                    }
 
                 }
 
 
+                try
+                {
 
                 unit.LeaveRepo.Update(request);
                 unit.Save();
                 return Ok(new { message = "Request handled successfully", status = request.Status });
+                }
+                catch (Exception)
+                {
+                    return BadRequest(new { message = "Try again" });
+                }
             }
             else
             {

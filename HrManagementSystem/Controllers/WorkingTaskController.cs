@@ -13,7 +13,7 @@ namespace HrManagementSystem.Controllers
     {
         IMapper mapper;
         UnitOfWork unit;
-        public WorkingTaskController(UnitOfWork u , IMapper m)
+        public WorkingTaskController(UnitOfWork u, IMapper m)
         {
             unit = u;
             mapper = m;
@@ -23,22 +23,29 @@ namespace HrManagementSystem.Controllers
         [EndpointSummary("Adding new task for employee")]
         public async Task<IActionResult> AddNewWorkingTask(AddWorkingTaskDTO dto)
         {
-            if (dto == null ) 
-            return BadRequest(new {message=  "Empty task" });
-            if (unit.EmployeeRepo.getByID(dto.EmployeeId) == null) 
-            return BadRequest(new { message = "Employee Not found" });
+            if (dto == null)
+                return BadRequest(new { message = "Empty task" });
+            if (unit.EmployeeRepo.getByID(dto.EmployeeId) == null)
+                return BadRequest(new { message = "Employee Not found" });
 
-            if(dto.DueDate<DateTime.Now.Date)
+            if (dto.DueDate < DateTime.Now.Date)
                 return BadRequest(new { message = "Can't add past date tasks" });
+            try
+            {
 
-            WorkingTask workingTask = mapper.Map<WorkingTask>(dto);
-            workingTask.CreatedAt = DateTime.Now;
-            workingTask.UpdatedAt = DateTime.Now;
-            workingTask.Status = "Pending";
-            unit.WorkingTaskRepo.Add(workingTask);
-            unit.Save();
-            DisplayWorkingTaskDTO WKT = mapper.Map<DisplayWorkingTaskDTO>(await unit.WorkingTaskRepo.SingleWorkingTask(workingTask.Id));
-            return Ok(WKT);
+                WorkingTask workingTask = mapper.Map<WorkingTask>(dto);
+                workingTask.CreatedAt = DateTime.Now;
+                workingTask.UpdatedAt = DateTime.Now;
+                workingTask.Status = "Pending";
+                unit.WorkingTaskRepo.Add(workingTask);
+                unit.Save();
+                DisplayWorkingTaskDTO WKT = mapper.Map<DisplayWorkingTaskDTO>(await unit.WorkingTaskRepo.SingleWorkingTask(workingTask.Id));
+                return Ok(WKT);
+            }
+            catch (Exception)
+            {
+                return BadRequest(new { message = "Try again" });
+            }
         }
         [HttpGet("All")]
         [EndpointSummary("Get All Tasks")]
@@ -60,7 +67,7 @@ namespace HrManagementSystem.Controllers
             DisplayWorkingTaskDTO task = mapper.Map<DisplayWorkingTaskDTO>(await unit.WorkingTaskRepo.GetTaskByIdWithEmployee(id));
             if (task == null)
             {
-                return BadRequest(new {message = "No such task" });
+                return BadRequest(new { message = "No such task" });
             }
             return Ok(task);
         }
@@ -69,9 +76,10 @@ namespace HrManagementSystem.Controllers
         [EndpointSummary("Get Employee Tasks")]
         public async Task<IActionResult> GetAllEmployeeTasks(int empId)
         {
-            if (unit.EmployeeRepo.getByID(empId)==null) return BadRequest(new { message = "No such employee" });  
-            List<DisplayWorkingTaskDTO> AllEmpTasks = mapper.Map<List<DisplayWorkingTaskDTO>> (await unit.WorkingTaskRepo.getEmployeeAllTasks(empId));
-            if (AllEmpTasks == null) {
+            if (unit.EmployeeRepo.getByID(empId) == null) return BadRequest(new { message = "No such employee" });
+            List<DisplayWorkingTaskDTO> AllEmpTasks = mapper.Map<List<DisplayWorkingTaskDTO>>(await unit.WorkingTaskRepo.getEmployeeAllTasks(empId));
+            if (AllEmpTasks == null)
+            {
                 return BadRequest(new { message = "Employee has no tasks" });
             }
             return Ok(AllEmpTasks);
@@ -82,33 +90,47 @@ namespace HrManagementSystem.Controllers
         public async Task<IActionResult> EmployeeUpdateTask(EmployeeUpdatesTaskDTO dto)
         {
             WorkingTask task = unit.WorkingTaskRepo.getByID(dto.TaskId);
-            if (task==null)
+            if (task == null)
                 return BadRequest(new { message = "No such task" });
             if (DateTime.Now.Date > task.DueDate.Date)
                 dto.Status = "Late";
+            try
+            {
 
-            task.Status = dto.Status;
-            task.UpdatedAt = DateTime.Now;
-            unit.WorkingTaskRepo.Update(task);
-            unit.Save();
-            return Ok( new { message = "Task updated" });
+                task.Status = dto.Status;
+                task.UpdatedAt = DateTime.Now;
+                unit.WorkingTaskRepo.Update(task);
+                unit.Save();
+                return Ok(new { message = "Task updated" });
+            }
+            catch (Exception)
+            {
+                return BadRequest(new { message = "Try again" });
+            }
         }
-        
+
         [HttpPut("admin")]
         public async Task<IActionResult> AdminUpdatesTask(AdminUpdatesTaskDTO dto)
         {
             WorkingTask task = unit.WorkingTaskRepo.getByID(dto.Id);
-            if (task==null)
+            if (task == null)
                 return BadRequest(new { message = "No such task" });
-            if(unit.EmployeeRepo.getByID(dto.EmployeeId)==null)
+            if (unit.EmployeeRepo.getByID(dto.EmployeeId) == null)
                 return NotFound(new { message = "Employee not found" });
-            task = mapper.Map(dto, task);  //Map<WorkingTask>(dto);
-            task.UpdatedAt = DateTime.Now;
-            task.Status = dto.Status;
-            unit.WorkingTaskRepo.Update(task);
-            unit.Save();
+            try
+            {
 
-            return Ok(new {message = "Task updated"});
+                task = mapper.Map(dto, task);
+                task.UpdatedAt = DateTime.Now;
+                task.Status = dto.Status;
+                unit.WorkingTaskRepo.Update(task);
+                unit.Save();
+                return Ok(new { message = "Task updated" });
+            }
+            catch (Exception)
+            {
+                return BadRequest(new { message = "Try again" });
+            }
         }
     }
 }

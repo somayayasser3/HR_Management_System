@@ -35,9 +35,16 @@ namespace HrManagementSystem.Controllers
             Department newDepartment = mapper.Map<Department>(newDept);
             newDepartment.CreatedAt = DateTime.Now;
             newDepartment.UpdatedAt = DateTime.Now;
+            try
+            {
             unit.DepartmentRepo.Add(newDepartment);
             unit.Save();
             return Ok(newDepartment);
+            }
+            catch (Exception)
+            {
+                return BadRequest(new { message = "Try again" });
+            }
         }
         [HttpPut]
         [EndpointSummary("Updates Department Data")]
@@ -48,11 +55,19 @@ namespace HrManagementSystem.Controllers
                 return BadRequest(new { message = "No such department" });
             }
             //updatedDept = mapper.Map<Department>(deptToUpdate);
+            try
+            {
+
             mapper.Map(deptToUpdate, updatedDept);
             updatedDept.UpdatedAt = DateTime.Now;
             unit.DepartmentRepo.Update(updatedDept);
             unit.Save();
             return Ok(updatedDept);
+            }
+            catch (Exception)
+            {
+                return BadRequest(new { message = "Try again" });
+            }
         }
 
         [HttpDelete("{id}")]
@@ -63,9 +78,21 @@ namespace HrManagementSystem.Controllers
             if (deletedDept == null) {
                 return BadRequest(new { message = "No such department" } );
             }
+
+            List<Employee> allEmpsinDept = unit.EmployeeRepo.GetEmployeesByDeptId(id);
+            if (allEmpsinDept.Count > 0)
+                return BadRequest(new {message = "Employee has employees " });
+            try
+            {
+
             unit.DepartmentRepo.Delete(id);
             unit.Save();
             return Ok();
+            }
+            catch (Exception)
+            {
+                return BadRequest(new { message = "Try again" });
+            }
         }
 
     }

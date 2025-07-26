@@ -52,9 +52,16 @@ namespace HrManagementSystem.Controllers
             var holiday = mapper.Map<OfficialHoliday>(holidayDisplayDTO);
             holiday.CreatedAt = DateTime.Now;
             holiday.UpdatedAt = DateTime.Now;
+            try
+            {
 
             unit.OfficialHolidayRepo.Add(holiday);
             unit.Save();
+            }
+            catch (Exception)
+            {
+                return BadRequest(new { message = "Try again" });
+            }
 
             return Ok(holiday);
         }
@@ -70,11 +77,17 @@ namespace HrManagementSystem.Controllers
 
             mapper.Map(officialHolidayDisplay, existingHoliday);
             existingHoliday.UpdatedAt = DateTime.Now;
+            try
+            {
 
             unit.OfficialHolidayRepo.Update(existingHoliday);
             unit.Save();
-
             return Ok();
+            }
+            catch (Exception)
+            {
+                return BadRequest(new { message = "Try again" });
+            }
         }
 
         [HttpDelete("{id}")]
@@ -82,11 +95,17 @@ namespace HrManagementSystem.Controllers
         [EndpointSummary("Delete an existing Official Holiday")]
         public IActionResult DeleteOfficialHoliday(int id)
         {
+            try
+            {
 
             unit.OfficialHolidayRepo.Delete(id);
             unit.Save();
-
             return Ok();
+            }
+            catch (Exception)
+            {
+                return BadRequest(new { message = "Try again" });
+            }
         }
     }
 }

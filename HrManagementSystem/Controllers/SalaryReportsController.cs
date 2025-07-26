@@ -55,7 +55,6 @@ namespace HrManagementSystem.Controllers
             if (empSalaryReport == null)
             {
                 return BadRequest(new { message = "Something went wrong" });
-
             }
 
             return Ok(empSalaryReport);
@@ -70,9 +69,17 @@ namespace HrManagementSystem.Controllers
             { 
             return NotFound(new { message = "Report Not Found" });
             }
+            try
+            {
+
             unit.SalaryReportRepo.Delete(id);
             unit.Save();
             return Ok();    
+            }
+            catch (Exception)
+            {
+                return BadRequest(new { message = "Try again" });
+            }
         }
 
         [HttpPost("generate")]
@@ -80,8 +87,16 @@ namespace HrManagementSystem.Controllers
         [Authorize(Roles = "Admin,HR")]
         public async Task<IActionResult> GenerateMonthlySalaryReports()
         {
+            try
+            {
+
             await _salaryReportService.GenerateSalaryReportsAsync();
             return Ok(new { message = "Monthly salary reports generated suc cessfully." });
+            }
+            catch (Exception)
+            {
+                return BadRequest(new { message = "Try again" });
+            }
         }
 
         [HttpPost("generateEMP")]
@@ -89,18 +104,19 @@ namespace HrManagementSystem.Controllers
         [Authorize(Roles = "Admin,HR")]
         public async Task<IActionResult> GenerateMonthlySalaryReportForEmployee(int m,int y , int id)
         {
+            try
+            {
+
             await _salaryReportService.GenerateMonthlySalaryReportForEmployee(m,y,id);
             return Ok(new { message = "Monthly salary reports generated suc cessfully." });
+            }
+            catch (Exception)
+            {
+                return BadRequest(new { message = "Try again" });
+            }
         }
 
 
-        //[HttpPost("generateAll")]
-        //[EndpointSummary("Manually generate salary reports for all employees in specific month and year")]
-        ////[Authorize(Roles = "Admin,HR")]
-        //public async Task<IActionResult> GenerateMonthlySalaryReportForAllEmployeesInSpecificDate(int m, int y)
-        //{
-        //    await _salaryReportService.GenerateMonthlySalaryReportForAllEmployeesInSpecificDate22(m, y);
-        //    return Ok(new { message = "Monthly salary reports generated suc cessfully." });
-        //}
+       
     }
 }
