@@ -15,10 +15,13 @@ namespace HrManagementSystem.Controllers
     {
         UnitOfWork unit;
         IMapper mapper;
-        public SalaryReportsController(UnitOfWork u,IMapper map)
+        private readonly SalaryReportServiceEF _salaryReportService;
+        public SalaryReportsController(UnitOfWork u,IMapper map, SalaryReportServiceEF Sr)
         {
             unit = u;
             mapper = map;
+            _salaryReportService = Sr;
+
         }
 
         [HttpGet("all")]
@@ -75,31 +78,29 @@ namespace HrManagementSystem.Controllers
         [HttpPost("generate")]
         [EndpointSummary("Manually generate salary reports for the previous month")]
         [Authorize(Roles = "Admin,HR")]
-        public async Task<IActionResult> GenerateMonthlySalaryReports(
-         [FromServices] SalaryReportServiceEF salaryReportService)
+        public async Task<IActionResult> GenerateMonthlySalaryReports()
         {
-            await salaryReportService.GenerateSalaryReportsAsync();
+            await _salaryReportService.GenerateSalaryReportsAsync();
             return Ok(new { message = "Monthly salary reports generated suc cessfully." });
         }
 
         [HttpPost("generateEMP")]
         [EndpointSummary("Manually generate salary reports for Employee in specific month and year")]
         [Authorize(Roles = "Admin,HR")]
-        public async Task<IActionResult> GenerateMonthlySalaryReportForEmployee(
-         [FromServices] SalaryReportServiceEF salaryReportService , int m,int y , int id)
+        public async Task<IActionResult> GenerateMonthlySalaryReportForEmployee(int m,int y , int id)
         {
-            await salaryReportService.GenerateMonthlySalaryReportForEmployee(m,y,id);
+            await _salaryReportService.GenerateMonthlySalaryReportForEmployee(m,y,id);
             return Ok(new { message = "Monthly salary reports generated suc cessfully." });
         }
 
 
-        [HttpPost("generateAll")]
-        [EndpointSummary("Manually generate salary reports for all employees in specific month and year")]
-        public async Task<IActionResult> GenerateMonthlySalaryReportForAllEmployeesInSpecificDate(
-         [FromServices] SalaryReportServiceEF salaryReportService, int m, int y)
-        {
-            await salaryReportService.GenerateMonthlySalaryReportForAllEmployeesInSpecificDate22(m, y);
-            return Ok(new { message = "Monthly salary reports generated suc cessfully." });
-        }
+        //[HttpPost("generateAll")]
+        //[EndpointSummary("Manually generate salary reports for all employees in specific month and year")]
+        ////[Authorize(Roles = "Admin,HR")]
+        //public async Task<IActionResult> GenerateMonthlySalaryReportForAllEmployeesInSpecificDate(int m, int y)
+        //{
+        //    await _salaryReportService.GenerateMonthlySalaryReportForAllEmployeesInSpecificDate22(m, y);
+        //    return Ok(new { message = "Monthly salary reports generated suc cessfully." });
+        //}
     }
 }

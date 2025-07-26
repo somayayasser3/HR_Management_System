@@ -277,8 +277,8 @@ namespace HrManagementSystem.Controllers
                          $"Message: \"{userMessage}\"\n" +
                          "Available data types: employee_info, salary, department, leave_balance, attendances, leave_requests, salary_reports, holidays\n" +
                          "Only suggest data that the user role has access to.";
-
-            return await CallOpenAI(prompt);
+            var x = await CallOpenAI(prompt);
+            return x;
         }
 
         private string GetRoleCapabilities(string role, bool isAdmin, bool isHr)
@@ -314,26 +314,55 @@ namespace HrManagementSystem.Controllers
                     case "employee_info":
                         if (isAdmin || isHr)
                         {
-                            try
+                            // Check if the user is asking about their personal data
+                            bool isPersonalRequest = analysis.Intent?.ToLower().Contains("my") == true||
+                                analysis.Intent?.ToLower().Contains("personal") == true ||
+                                analysis.Intent?.ToLower().Contains("profile") == true;
+
+                            if (isPersonalRequest && employeeId > 0)
                             {
-                                var employees = unit.EmployeeRepo.getAll()
-                                    .Select(e => new
+                                // Return personal data for HR/Admin
+                                var emp = unit.EmployeeRepo.GetEmployeeWithDeptBYID(employeeId);
+                                if (emp != null)
+                                {
+                                    data["my_profile"] = new
                                     {
-                                        e.FullName,
-                                        //e.User.Email,
-                                        e.Salary,
-                                        Department = e.Department != null ? e.Department.DepartmentName : "N/A",
-                                        e.PhoneNumber
-                                    })?.ToList();
-
-
-                                data["all_employees"] = employees;
-                                // Console.WriteLine($"Retrieved {employees.Count} employees");
+                                        FullName = emp.FullName ?? "N/A",
+                                        Email = emp.User?.Email ?? "No Email",
+                                        Department = emp.Department?.DepartmentName ?? "N/A",
+                                        PhoneNumber = emp.PhoneNumber ?? "N/A",
+                                        Address = emp.Address ?? "N/A",
+                                        HireDate = emp.HireDate,
+                                        Salary = emp.Salary
+                                    };
+                                    Console.WriteLine($"Retrieved personal profile for HR/Admin employee ID: {employeeId}");
+                                }
                             }
-                            catch (Exception ex)
+                            else
                             {
-                                Console.WriteLine($"Error fetching employees: {ex.Message}");
-                                data["all_employees"] = new { error = "Could not retrieve employee data" };
+                                // Return all employees data for HR/Admin
+                                try
+                                {
+                                    var employees = unit.EmployeeRepo.getAll()
+                                        ?.Where(e => e != null)
+                                        .Select(e => new
+                                        {
+                                            FullName = e.FullName ?? "N/A",
+                                            Email = e.User?.Email ?? "No Email",
+                                            Salary = e.Salary,
+                                            HireDate = e.HireDate,
+                                            Department = e.Department?.DepartmentName ?? "N/A",
+                                            PhoneNumber = e.PhoneNumber ?? "N/A"
+                                        })?.ToList();
+
+                                    data["all_employees"] = employees;
+                                    Console.WriteLine($"Retrieved {employees?.Count ?? 0} employees for HR/Admin");
+                                }
+                                catch (Exception ex)
+                                {
+                                    Console.WriteLine($"Error fetching employees: {ex.Message}");
+                                    data["all_employees"] = new { error = "Could not retrieve employee data" };
+                                }
                             }
                         }
                         else if (employeeId > 0)
@@ -571,6 +600,7 @@ namespace HrManagementSystem.Controllers
             var requestBody = new
             {
                 model = "gpt-4",
+                //model = "gpt-4o",
                 messages = new[] {
                     new { role = "system", content = "You are an expert HR assistant. Always reply in English with a professional but friendly tone." },
                     new { role = "user", content = prompt }

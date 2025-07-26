@@ -49,10 +49,10 @@ namespace HrManagementSystem.Controllers
             DateTime end = request.EndDate.ToDateTime(TimeOnly.MinValue);
             DateTime today = DateTime.Today;
             //  if Entered Past Date
-            if (start < today || end < today  || request.EndDate<request.StartDate  )
-            {
-                return BadRequest(new { message = "You cannot request leave for a past date." });
-            }
+            //if (start < today || end < today  || request.EndDate<request.StartDate  )
+            //{
+            //    return BadRequest(new { message = "You cannot request leave for a past date." });
+            //}
             var days = (request.EndDate.ToDateTime(TimeOnly.MinValue) - request.StartDate.ToDateTime(TimeOnly.MinValue)).Days +1;
             // if Enter days more than leave balance
             switch (leaveType.Name.ToLower())
@@ -111,29 +111,27 @@ namespace HrManagementSystem.Controllers
                             employeeLeaveBalance.UnpaidLeaveBalance += days;
                             break;
                     }
+                    //if (request.Status.ToLower() != "rejected")
+                    //{
+                    //    for (int i = 0; i < days; i++)
+                    //    {
+                    //        var leaveDate = request.StartDate.ToDateTime(TimeOnly.MinValue).AddDays(i);
+                    //        var attendance = new Attendance
+                    //        {
+                    //            EmployeeId = request.EmployeeId,
+                    //            AttendanceDate = leaveDate,
+                    //            CheckInTime = employeeLeaveBalance.Employee.WorkStartTime.TimeOfDay,
+                    //            CheckOutTime = employeeLeaveBalance.Employee.WorkEndTime.TimeOfDay,
+                    //            OvertimeHours = 0,
+                    //            DelayHours = 0,
+                    //            CreatedAt = DateTime.UtcNow,
+                    //            UpdatedAt = DateTime.UtcNow
+                    //        };
 
+                    //        unit.AttendanceRepo.Add(attendance);
+                    //    }
 
-                    if (request.Status.ToLower() != "rejected")
-                    {
-                        for (int i = 0; i < days; i++)
-                        {
-                            var leaveDate = request.StartDate.ToDateTime(TimeOnly.MinValue).AddDays(i);
-                            var attendance = new Attendance
-                            {
-                                EmployeeId = request.EmployeeId,
-                                AttendanceDate = leaveDate,
-                                CheckInTime = employeeLeaveBalance.Employee.WorkStartTime.TimeOfDay,
-                                CheckOutTime = employeeLeaveBalance.Employee.WorkEndTime.TimeOfDay,
-                                OvertimeHours = 0,
-                                DelayHours = 0,
-                                CreatedAt = DateTime.UtcNow,
-                                UpdatedAt = DateTime.UtcNow
-                            };
-
-                            unit.AttendanceRepo.Add(attendance);
-                        }
-
-                    }
+                    //}
                     unit.EmployeeLeaveBalanceRepo.Update(employeeLeaveBalance);
 
                 }
