@@ -599,8 +599,8 @@ namespace HrManagementSystem.Controllers
 
             var requestBody = new
             {
-                model = "gpt-4",
-                //model = "gpt-4o",
+                model = "gpt-4.1",
+                //model = "gpt-4o-mini",
                 messages = new[] {
                     new { role = "system", content = "You are an expert HR assistant. Always reply in English with a professional but friendly tone." },
                     new { role = "user", content = prompt }
@@ -617,11 +617,7 @@ namespace HrManagementSystem.Controllers
 
                 using var doc = JsonDocument.Parse(json);
                 return doc.RootElement
-                          .GetProperty("choices")[0]
-                          .GetProperty("message")
-                          .GetProperty("content")
-                          .GetString()
-                          ?.Trim() ?? "I'm sorry, I couldn't process your request at the moment.";
+                          .GetProperty("choices")[0] .GetProperty("message") .GetProperty("content").GetString() ?.Trim() ?? "I'm sorry, I couldn't process your request at the moment.";
             }
             catch (Exception ex)
             {

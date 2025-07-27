@@ -81,10 +81,9 @@ namespace HrManagementSystem.Controllers
 
             List<Employee> allEmpsinDept = unit.EmployeeRepo.GetEmployeesByDeptId(id);
             if (allEmpsinDept.Count > 0)
-                return BadRequest(new {message = "Employee has employees " });
+                return BadRequest(new {message = "Department has employees" });
             try
             {
-
             unit.DepartmentRepo.Delete(id);
             unit.Save();
             return Ok();

@@ -200,12 +200,12 @@ namespace HrManagementSystem.Controllers
             TimeSpan? actualCheckOut = att.CheckOutTime;
             decimal DelayHours = 0;
             decimal OvertimeHours = 0;
-            if (att.CheckInTime > requiredCheckIn)
+            if (att.CheckInTime >= requiredCheckIn)
                 att.DelayHours = (decimal)(actualCheckIn - requiredCheckIn).TotalHours;
             else
                 att.DelayHours = 0;
 
-            if (att.CheckOutTime > requiredCheckOut)
+            if (att.CheckOutTime >= requiredCheckOut)
                 att.OvertimeHours = (decimal)(actualCheckOut - requiredCheckOut)?.TotalHours;
             try
             {

@@ -41,17 +41,17 @@ namespace HrManagementSystem.Services
                 throw new UnauthorizedAccessException("Invalid credentials");
             }
 
-            var DBImage = GetFormFileFromWwwRoot(_unitOfWork.EmployeeRepo.GetEmployeeByUserId(user.Id).ImagePath);
-            CompareFacesDto c = new CompareFacesDto()
-            {
-                Image1 = DBImage,
-                Image2 = loginDto.Image,
-            };
-            var faceRecognitionResult =  await faceRecognitionService.CompareFacesAsync(c);
-            if (!faceRecognitionResult.Success || !faceRecognitionResult.IsSamePerson)
-            {
-                throw new UnauthorizedAccessException("Face does not match");
-            }
+            //var DBImage = GetFormFileFromWwwRoot(_unitOfWork.EmployeeRepo.GetEmployeeByUserId(user.Id).ImagePath);
+            //CompareFacesDto c = new CompareFacesDto()
+            //{
+            //    Image1 = DBImage,
+            //    Image2 = loginDto.Image,
+            //};
+            //var faceRecognitionResult =  await faceRecognitionService.CompareFacesAsync(c);
+            //if (!faceRecognitionResult.Success || !faceRecognitionResult.IsSamePerson)
+            //{
+            //    throw new UnauthorizedAccessException("Face does not match");
+            //}
             var result = await _userManager.CheckPasswordAsync(user, loginDto.Password);
             if (!result)
             {

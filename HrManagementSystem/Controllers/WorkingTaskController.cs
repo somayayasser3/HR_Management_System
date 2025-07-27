@@ -101,7 +101,7 @@ namespace HrManagementSystem.Controllers
                 task.UpdatedAt = DateTime.Now;
                 unit.WorkingTaskRepo.Update(task);
                 unit.Save();
-                return Ok(new { message = "Task updated" });
+                return Ok(new { status = task.Status });
             }
             catch (Exception)
             {

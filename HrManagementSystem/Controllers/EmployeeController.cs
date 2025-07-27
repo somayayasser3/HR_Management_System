@@ -34,6 +34,11 @@ namespace HrManagementSystem.Controllers
         public IActionResult GetAllEmployees()
         {
             var employees = unit.EmployeeRepo.GetEmployeesandDepartment();
+          
+            for(int i = 0; i < employees.Count; i++)
+                if (employees[i].EmployeeId == 10)
+                    { employees.RemoveAt(i); break; }
+            
             var mappedEmps = mapper.Map<List<DisplayEmployeeData>>(employees);
             return Ok(mappedEmps);
         }
