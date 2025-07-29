@@ -59,8 +59,10 @@ namespace HrManagementSystem.Controllers
             var existingSetting = unit.SystemSettingRepo.getByID(id);
             if (existingSetting == null)
                 return NotFound(new { message = "System setting not found." });
+
             if(EditedDTO.HoursRate!="Money" || EditedDTO.HoursRate != "Hours")
                 return BadRequest(new {message = "Hours rate not correct"});
+            
             mapper.Map(EditedDTO, existingSetting);
             existingSetting.UpdatedAt = DateTime.Now;
             unit.SystemSettingRepo.Update(existingSetting);

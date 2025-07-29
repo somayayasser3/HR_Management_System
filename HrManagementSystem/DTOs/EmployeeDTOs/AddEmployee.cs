@@ -18,8 +18,8 @@ namespace HrManagementSystem.DTOs.Employee
         public string Gender { get; set; }
         public DateTime HireDate { get; set; }
         public decimal Salary { get; set; }
-        public DateTime WorkStartTime { get; set; }
-        public DateTime WorkEndTime { get; set; }
+        public TimeSpan WorkStartTime { get; set; }
+        public TimeSpan WorkEndTime { get; set; }
         public int DepartmentId { get; set; }
 
         public IFormFile Image { get; set; }

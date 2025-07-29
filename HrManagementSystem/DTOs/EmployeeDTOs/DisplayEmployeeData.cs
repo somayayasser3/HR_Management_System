@@ -14,8 +14,9 @@ namespace HrManagementSystem.DTOs.Employee
         public string NationalId { get; set; }
         public string Gender { get; set; }
         public DateTime HireDate { get; set; }
+        public TimeSpan WorkStartTime { get; set; }
+        public TimeSpan WorkEndTime { get; set; }
         public decimal Salary { get; set; }
-
         public string DepartmentName { get; set; }
         public string DepartmentId { get; set; }
 
