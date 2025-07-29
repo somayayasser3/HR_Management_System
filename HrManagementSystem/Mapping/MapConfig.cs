@@ -31,8 +31,8 @@ namespace HrManagementSystem.Mapping
                .ForMember(dest => dest.CreatedAt, opt => opt.Ignore())
                .ForMember(dest => dest.UpdatedAt, opt => opt.Ignore())
                .ForMember(dest => dest.IsActive, opt => opt.Ignore())
-               .ForMember(dest => dest.Employee, opt => opt.Ignore()); 
-            CreateMap<SystemSetting, DisplaySystemSettingsDTO>().ReverseMap();
+               .ForMember(dest => dest.Employee, opt => opt.Ignore());
+            CreateMap<SystemSetting, UpdateSystemSettingsDTO>().ReverseMap();
             CreateMap<OfficialHoliday, OfficialHolidayDisplayDTO>().ReverseMap();
             CreateMap<OfficialHoliday, EditOfficalHolidayDTO>().ReverseMap();
             CreateMap<LeaveRequest, DisplayResultforLeaveRequest>().AfterMap(

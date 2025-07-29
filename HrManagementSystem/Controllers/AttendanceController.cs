@@ -27,7 +27,7 @@ namespace HrManagementSystem.Controllers
         [HttpGet("all")]
         [Authorize(Roles = "Admin,HR")]
         public IActionResult GetAllAttendance()
-            {
+        {
             List<GetAttendaceDTO> AllEmpsAttendance = mapper.Map<List<GetAttendaceDTO>>(unit.AttendanceRepo.GetAttendanceWithEmployees());
             if (AllEmpsAttendance.Count == 0)
             {
@@ -50,7 +50,6 @@ namespace HrManagementSystem.Controllers
 
         }
 
-        /// ////////////////////////////////////////
 
         [HttpGet("my-attendance")]
         [Authorize(Roles = "Employee,HR,Admin")]
@@ -66,15 +65,14 @@ namespace HrManagementSystem.Controllers
             List<GetAttendaceDTO> EmpAttendance = mapper.Map<List<GetAttendaceDTO>>(unit.AttendanceRepo.GetAttendanceForEmployee(employee.EmployeeId));
             return Ok(EmpAttendance);
         }
-        /// /////////////////////////////////////////
 
 
         [HttpPost("new")]
         [Authorize(Roles = "Admin,HR,Employee")]
         public IActionResult AddAttendanceForEmployee(AddEmpAttendance dto)
         {
-            double companyLat = 30.47852573059691;     // latitude of company
-            double companyLong = 31.192305498868247;    // longitude of company
+            double companyLat = 30.55816066274798;     
+            double companyLong = 31.018756819985306;   
             double allowedRadius = 100;     
 
             if (dto == null /*|| dto.CheckInTime > dto.CheckOutTime*/)
@@ -133,10 +131,9 @@ namespace HrManagementSystem.Controllers
         {
 
 
-            //double companyLat = 30.550334;     // latitude of company
-            //double companyLong = 31.0106341;    // longitude of company
-            double companyLat = 30.47852573059691;     // latitude of company
-            double companyLong = 31.192305498868247;    // longitude of company
+            double companyLat = 30.55816066274798;
+            double companyLong = 31.018756819985306;
+
             double allowedRadius = 100;
 
             Attendance AttendanceToUpdate = unit.AttendanceRepo.GetSingleAttendanceForEmployeeByEmployeeIdandDate(dto.EmployeeId, DateTime.Now.Date);
@@ -185,6 +182,7 @@ namespace HrManagementSystem.Controllers
         }
 
         [HttpPut("Updateatt")]
+        [Authorize(Roles = "Admin,HR")]
         public IActionResult AdminUpdatesAttendance(AdminUpdatesAttendanceDTO att)
         {
             Attendance oldAttendance  = unit.AttendanceRepo.getByID(att.AttendanceId);

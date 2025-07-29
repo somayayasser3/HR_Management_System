@@ -446,7 +446,7 @@ namespace HrManagementSystem.Controllers
                             try
                             {
                                 var allAttendances = unit.AttendanceRepo.GetAttendanceWithEmployees()
-                                    .Take(50)
+                                    .OrderByDescending(a => a.AttendanceDate)
                                     .Select(a => new
                                     {
                                         a.Employee.FullName,
@@ -467,7 +467,6 @@ namespace HrManagementSystem.Controllers
                         else if (employeeId > 0)
                         {
                             var attendances = unit.AttendanceRepo.GetAttendanceForEmployee(employeeId)
-                                .Take(30)
                                 .Select(a => new
                                 {
                                     a.AttendanceDate,

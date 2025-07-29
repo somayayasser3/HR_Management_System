@@ -32,8 +32,8 @@ namespace HrManagementSystem.Models
         [Column(TypeName = "decimal(18,2)")]
         public decimal Salary { get; set; }
 
-        public DateTime WorkStartTime { get; set; }
-        public DateTime WorkEndTime { get; set; }
+        public TimeSpan WorkStartTime { get; set; }
+        public TimeSpan WorkEndTime { get; set; }
 
         [Required]
         public int DepartmentId { get; set; }

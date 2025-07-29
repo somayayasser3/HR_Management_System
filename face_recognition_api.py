@@ -88,7 +88,7 @@ def compare_faces():
         
         return jsonify({
             'success': True,
-            'is_same_person': bool(is_same_person),
+            'isSamePerson': bool(is_same_person),
             'confidence': float(1 - distance),
             'distance': float(distance),
             'message': "✅ Match! This is the same person." if is_same_person else "❌ No match. This is a different person."

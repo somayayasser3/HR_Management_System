@@ -34,7 +34,7 @@ namespace HrManagementSystem.UnitOfWorks
             }
         }
 
-        public AttendanceRepository AttendanceRepo
+        public virtual AttendanceRepository AttendanceRepo
         {
             get
             {
@@ -45,7 +45,7 @@ namespace HrManagementSystem.UnitOfWorks
             }
         }
 
-        public DepartmentRepository DepartmentRepo
+        public virtual DepartmentRepository DepartmentRepo
         {
             get
             {
@@ -55,7 +55,7 @@ namespace HrManagementSystem.UnitOfWorks
             }
         }
 
-        public LeaveRepository LeaveRepo
+        public virtual LeaveRepository LeaveRepo
         {
             get
             {
@@ -64,7 +64,7 @@ namespace HrManagementSystem.UnitOfWorks
                 return leaveRepo;
             }
         }
-        public EmployeeLeaveBalanceRepository EmployeeLeaveBalanceRepo
+        public virtual EmployeeLeaveBalanceRepository EmployeeLeaveBalanceRepo
         {
             get
             {
@@ -74,7 +74,7 @@ namespace HrManagementSystem.UnitOfWorks
             }
         }
 
-        public EmployeeRepository EmployeeRepo
+        public virtual EmployeeRepository EmployeeRepo
         {
             get
             {
@@ -93,7 +93,7 @@ namespace HrManagementSystem.UnitOfWorks
             }
         }
 
-        public OfficialHolidayRepository OfficialHolidayRepo
+        public virtual OfficialHolidayRepository OfficialHolidayRepo
         {
             get
             {
@@ -102,7 +102,7 @@ namespace HrManagementSystem.UnitOfWorks
                 return officialHolidayRepo;
             }
         }
-        public PermissionRepositroy PermissionRepo
+        public virtual PermissionRepositroy PermissionRepo
         {
             get
             {
@@ -112,7 +112,7 @@ namespace HrManagementSystem.UnitOfWorks
             }        
         }
 
-        public SalaryReportRepositroy SalaryReportRepo
+        public virtual SalaryReportRepositroy SalaryReportRepo
         {
             get
             {
@@ -122,7 +122,7 @@ namespace HrManagementSystem.UnitOfWorks
             }
         }
 
-        public SystemSettingRepository SystemSettingRepo
+        public virtual SystemSettingRepository SystemSettingRepo
         {
             get
             {
@@ -131,7 +131,7 @@ namespace HrManagementSystem.UnitOfWorks
                 return systemSettingRepo;
             }
         }
-        public UserGroupRepository UserGroupRepo
+        public virtual UserGroupRepository UserGroupRepo
         {
             get
             {
@@ -140,7 +140,7 @@ namespace HrManagementSystem.UnitOfWorks
                 return userGroupRepo;
             }
         }
-        public WorkingTaskRepository WorkingTaskRepo
+        public virtual WorkingTaskRepository WorkingTaskRepo
         {
             get
             {

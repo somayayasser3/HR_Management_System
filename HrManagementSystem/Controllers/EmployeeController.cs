@@ -51,7 +51,6 @@ namespace HrManagementSystem.Controllers
             var mappedEmployee = mapper.Map<DisplayEmployeeData>(employee);
             return Ok(mappedEmployee);
         }
-        ////////////////////////////////// 
         [HttpGet("my-profile")]
         [Authorize(Roles = "Employee")]
         [EndpointSummary("Get current employee's profile")]
@@ -100,8 +99,6 @@ namespace HrManagementSystem.Controllers
                 return BadRequest(new { message = "Try again" });
             }
         }
-
-        //////////////////////////////////////////////////////////////
         [HttpPost]
         [Authorize(Roles = "HR,Admin")]
         [EndpointSummary("Add Employee/User ")]
