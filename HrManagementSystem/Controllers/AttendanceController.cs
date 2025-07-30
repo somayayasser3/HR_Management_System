@@ -93,8 +93,8 @@ namespace HrManagementSystem.Controllers
                 return BadRequest(new { message = "You are outside the allowed location range." });
             }
 
-            TimeSpan requiredCheckIn = new TimeSpan(8, 0, 0); // 8:00 AM
-            TimeSpan requiredCheckOut = new TimeSpan(16, 0, 0); // 4:00 PM
+            TimeSpan requiredCheckIn = unit.EmployeeRepo.GetStartTimeForEmployee(dto.EmployeeId); // 8:00 AM
+            TimeSpan requiredCheckOut = unit.EmployeeRepo.GetEndTimeForEmployee(dto.EmployeeId); // 4:00 PM
 
             TimeSpan actualCheckIn = dto.CheckInTime;
             //TimeSpan? actualCheckOut = dto.CheckOutTime;
@@ -103,11 +103,11 @@ namespace HrManagementSystem.Controllers
             if (dto.CheckInTime > requiredCheckIn)
                 DelayHours = (decimal)(actualCheckIn - requiredCheckIn).TotalHours;
 
-            //if (dto.CheckOutTime > requiredCheckOut)
-            //    OvertimeHours = (decimal)(actualCheckOut - requiredCheckOut)?.TotalHours;
-          
+                //if (dto.CheckOutTime > requiredCheckOut)
+                //    OvertimeHours = (decimal)(actualCheckOut - requiredCheckOut)?.TotalHours;
 
-            Attendance newAttendance = mapper.Map<Attendance>(dto);
+
+                Attendance newAttendance = mapper.Map<Attendance>(dto);
             try
             {
                 newAttendance.OvertimeHours = OvertimeHours;
@@ -142,8 +142,8 @@ namespace HrManagementSystem.Controllers
             if (dto == null || AttendanceToUpdate.CheckInTime >= dto.CheckOutTime)
                 return BadRequest(new { message = "Invalid check-in or check-out time." });
 
-            TimeSpan requiredCheckIn = new TimeSpan(8, 0, 0); // 8:00 AM
-            TimeSpan requiredCheckOut = new TimeSpan(16, 0, 0); // 4:00 PM
+            TimeSpan requiredCheckIn = unit.EmployeeRepo.GetStartTimeForEmployee(dto.EmployeeId); // 8:00 AM
+            TimeSpan requiredCheckOut = unit.EmployeeRepo.GetEndTimeForEmployee(dto.EmployeeId); // 4:00 PM
 
             TimeSpan actualCheckIn = AttendanceToUpdate.CheckInTime;
             TimeSpan? actualCheckOut = dto.CheckOutTime;
@@ -191,8 +191,9 @@ namespace HrManagementSystem.Controllers
             if(att.AttendanceDate > DateTime.Now.Date)
                 return BadRequest(new { message = "Invalid check-in or check-out time." });
 
-            TimeSpan requiredCheckIn = new TimeSpan(8, 0, 0); // 8:00 AM
-            TimeSpan requiredCheckOut = new TimeSpan(16, 0, 0); // 4:00 PM
+            TimeSpan requiredCheckIn = unit.EmployeeRepo.GetStartTimeForEmployee(att.EmployeeId); // 8:00 AM
+            TimeSpan requiredCheckOut = unit.EmployeeRepo.GetEndTimeForEmployee(att.EmployeeId); // 4:00 PM
+
 
             TimeSpan actualCheckIn = att.CheckInTime;
             TimeSpan? actualCheckOut = att.CheckOutTime;
@@ -205,6 +206,8 @@ namespace HrManagementSystem.Controllers
 
             if (att.CheckOutTime >= requiredCheckOut)
                 att.OvertimeHours = (decimal)(actualCheckOut - requiredCheckOut)?.TotalHours;
+            else
+                att.OvertimeHours= 0;
             try
             {
             mapper.Map(att, oldAttendance);
@@ -241,7 +244,7 @@ namespace HrManagementSystem.Controllers
             }
         }
 
-
+        
 
     }
 }

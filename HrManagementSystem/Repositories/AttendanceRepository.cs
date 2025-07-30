@@ -23,6 +23,10 @@ namespace HrManagementSystem.Repositories
         {
             return con.Attendances.Where(x=>x.EmployeeId == id && x.AttendanceDate == date).FirstOrDefault();
         }
+        public List<Attendance> GetOvertimeAndDelayDaysInSpecificDate (int id , int month , int year)
+        {
+            return con.Attendances.Where(x=>x.EmployeeId == id && x.AttendanceDate.Year == year && x.AttendanceDate.Month == month && ((x.DelayHours>0) || (x.OvertimeHours>0))).Include(e=>e.Employee).ThenInclude(d=>d.Department).ToList();
+        }
 
     }
 }

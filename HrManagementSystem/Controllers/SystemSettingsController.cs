@@ -28,8 +28,8 @@ namespace HrManagementSystem.Controllers
         [Authorize(Roles = "Admin,HR,Employee")]
         public IActionResult GetAllSystemSettings()
         {
-            var settings = unit.SystemSettingRepo.getAll();
-            if (settings == null || !settings.Any())
+            var settings = unit.SystemSettingRepo.getAll().FirstOrDefault();
+            if (settings == null)
             {
                 return NotFound(new { message = "No system settings found." });
             }           
@@ -60,7 +60,7 @@ namespace HrManagementSystem.Controllers
             if (existingSetting == null)
                 return NotFound(new { message = "System setting not found." });
 
-            if(EditedDTO.HoursRate!="Money" || EditedDTO.HoursRate != "Hours")
+            if(EditedDTO.HoursRate!="Money" && EditedDTO.HoursRate != "Hours")
                 return BadRequest(new {message = "Hours rate not correct"});
             
             mapper.Map(EditedDTO, existingSetting);

@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using HrManagementSystem.DTOs.AttendaceDTOs;
 using HrManagementSystem.DTOs.SalaryReportsDTOs;
 using HrManagementSystem.Services;
 using HrManagementSystem.UnitOfWorks;
@@ -10,7 +11,7 @@ namespace HrManagementSystem.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize]
+    //[Authorize]
     public class SalaryReportsController : ControllerBase
     {
         UnitOfWork unit;
@@ -34,7 +35,7 @@ namespace HrManagementSystem.Controllers
         }
 
         [HttpPost("SpecificSalary")]
-        [EndpointSummary("Get salary report for specific employee in assssssssssss specific month")]
+        [EndpointSummary("Get salary report for specific employee in a specific month")]
         //[Authorize(Roles = "Admin,HR")]
         public async Task<IActionResult> GetEmployeeSalarReportInMonth(GetSalaryReportForSpecificEmployeeDTO salaryReportInfo)
         {
@@ -46,6 +47,27 @@ namespace HrManagementSystem.Controllers
 
             return Ok(empSalaryReport);
         }
+
+        [HttpPost("DetailedSalary")]
+        [EndpointSummary("Get Detailed salary report for specific employee in a specific month")]
+        //[Authorize(Roles = "Admin,HR")]
+        public async Task<IActionResult> GetEmployeeDetailedSalarReportInMonth(GetSalaryReportForSpecificEmployeeDTO salaryReportInfo)
+        {
+           DetailedAttendanceDTO detailed = new DetailedAttendanceDTO();
+            detailed.attendances = mapper.Map<List<GetAttendaceDTO>>(unit.AttendanceRepo.GetOvertimeAndDelayDaysInSpecificDate(salaryReportInfo.EmployeeId, salaryReportInfo.Month, salaryReportInfo.Year));
+            detailed.DelaySummation = detailed.attendances.Sum(a => a.DelayHours); 
+            detailed.OverTimeSummation = detailed.attendances.Sum(a => a.OvertimeHours);
+            GetSalaryReportDTO sr = mapper.Map<GetSalaryReportDTO>(await unit.SalaryReportRepo.GetSalaryMonthReportWithEmployee(salaryReportInfo.Month, salaryReportInfo.Year, salaryReportInfo.EmployeeId));
+            detailed.OvertimeAmount = sr.OvertimeAmount;
+            detailed.DelayAmount = sr.DeductionAmount;
+            return Ok(detailed);
+        }
+
+
+
+
+
+
         [HttpGet("employee/{empid}")]
         [EndpointSummary("Get all salary report for specific employee")]
         [Authorize(Roles = "Admin,HR")]

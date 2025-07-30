@@ -50,6 +50,15 @@ namespace HrManagementSystem.Repositories
             return con.Employees.Where(x => x.DepartmentId == id).ToList();
         }
 
+        public TimeSpan GetStartTimeForEmployee(int id)
+        {
+            return con.Employees.Where(x => x.EmployeeId == id).Select(x => x.WorkStartTime).FirstOrDefault();
+        }
+        public TimeSpan GetEndTimeForEmployee(int id)
+        {
+            return con.Employees.Where(x => x.EmployeeId == id).Select(x => x.WorkEndTime).FirstOrDefault();
+        }
+
 
     }
 }
