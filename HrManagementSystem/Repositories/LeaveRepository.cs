@@ -33,5 +33,12 @@ namespace HrManagementSystem.Repositories
         {
             return con.LeaveTypes.Where(t => t.Id == id).FirstOrDefault();
         }
+
+        public bool FoundLeaveRequest(int id)
+        {
+             int x = con.LeaveRequests.Where(l => l.EmployeeId == id && l.Status == "Pending").ToList().Count() ;
+            return x > 0;
+        }
+
     }
 }
