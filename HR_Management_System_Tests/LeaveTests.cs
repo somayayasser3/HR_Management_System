@@ -98,7 +98,6 @@ public class LeaveTests
             Gender = "Male",
             NationalId = "12345678901234",
             ImagePath = "image.jpg",
-            LeaveBalance = new EmployeeLeaveBalance { EmployeeId = 1, AnnualLeaveBalance = 10 }
         };
         var leaveType = new LeaveType { Id = 1, Name = "Annual" };
         var request = new LeaveRequest
@@ -115,7 +114,6 @@ public class LeaveTests
 
         _context.Employees.Add(emp);
         _context.LeaveTypes.Add(leaveType);
-        _context.EmployeeLeaveBalances.Add(emp.LeaveBalance);
         _context.LeaveRequests.Add(request);
         _context.SaveChanges();
 
@@ -124,7 +122,6 @@ public class LeaveTests
         var okResult = result as OkObjectResult;
         Assert.IsNotNull(okResult);
         Assert.AreEqual("Approved", _context.LeaveRequests.Find(1)?.Status);
-        Assert.AreEqual(7, _context.EmployeeLeaveBalances.Find(1)?.AnnualLeaveBalance);
     }
 
     [TestMethod]

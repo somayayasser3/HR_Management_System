@@ -19,7 +19,7 @@ namespace HrManagementSystem.Models
         public DbSet<SalaryReport> SalaryReports { get; set; }
         public DbSet<LeaveRequest> LeaveRequests { get; set; }
         public DbSet<LeaveType> LeaveTypes { get; set; }
-        public DbSet<EmployeeLeaveBalance> EmployeeLeaveBalances { get; set; }
+        //public DbSet<EmployeeLeaveBalance> EmployeeLeaveBalances { get; set; }
         public DbSet<WorkingTask> WorkingTasks { get; set; }
 
         public DbSet<SystemSetting> SystemSettings { get; set; }

@@ -1,14 +1,15 @@
 ﻿using AutoMapper;
-using HrManagementSystem.DTOs.Employee;
-using HrManagementSystem.DTOs.OfficialHoliday;
-using HrManagementSystem.DTOs.SystemSettings;
 using HrManagementSystem.DTOs.AttendaceDTOs;
 using HrManagementSystem.DTOs.DepartmentsDTOs;
-using HrManagementSystem.DTOs.SalaryReportsDTOs;
-using HrManagementSystem.Models;
-using HrManagementSystem.DTOs.LeaveDTOs;
-using HrManagementSystem.DTOs.WorkingTaskDTOs;
+using HrManagementSystem.DTOs.Employee;
 using HrManagementSystem.DTOs.EmployeeDTOs;
+using HrManagementSystem.DTOs.LeaveDTOs;
+using HrManagementSystem.DTOs.LeaveType;
+using HrManagementSystem.DTOs.OfficialHoliday;
+using HrManagementSystem.DTOs.SalaryReportsDTOs;
+using HrManagementSystem.DTOs.SystemSettings;
+using HrManagementSystem.DTOs.WorkingTaskDTOs;
+using HrManagementSystem.Models;
 
 namespace HrManagementSystem.Mapping
 {
@@ -22,6 +23,7 @@ namespace HrManagementSystem.Mapping
                 des.DepartmentName = src.Department.DepartmentName;
                 des.Email = src.User.Email;
             });
+            
 
             CreateMap<AddEmployee, Employee>().ReverseMap();
 
@@ -71,6 +73,8 @@ namespace HrManagementSystem.Mapping
             CreateMap<UpdateEmployeeDTO, Employee>().ReverseMap();
             CreateMap<UpdateEmployeeDTO, User>().ReverseMap();
             CreateMap<AdminUpdatesAttendanceDTO, Attendance>().ReverseMap();
+            CreateMap<LeaveType, AddLeaveTypeDTO>().ReverseMap();
+            CreateMap<LeaveType, GetLeaveTypeDTO>().ReverseMap();
             //CreateMap<GetAttendaceDTO, AddEmpAttendance>().ReverseMap();
             //CreateMap<GetAttendaceDTO, UpdateEmployeeAttendance>().ReverseMap();
         }

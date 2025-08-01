@@ -10,23 +10,23 @@ namespace HrManagementSystem.Repositories
 
         public List<Employee> GetEmployeesandDepartment()
         {
-            return con.Employees.Include(e => e.Department).Include(e=>e.User).Include(e=>e.LeaveBalance).ToList();
+            return con.Employees.Include(e => e.Department).Include(e=>e.User).ToList();
         }
 
 
         public Employee GetEmployeeWithUserID(int id)
         {
-            return con.Employees.Include(e => e.Department).Include(e => e.User).Include(e => e.LeaveBalance).Include(e=>e.Attendances).Where(e => e.UserId == id).FirstOrDefault();
+            return con.Employees.Include(e => e.Department).Include(e => e.User).Include(e=>e.Attendances).Where(e => e.UserId == id).FirstOrDefault();
         }
         public Employee GetEmployeeWithDeptBYID (int id)
         {
-            return con.Employees.Include(e => e.Department).Include(e=> e.User).Include(e => e.LeaveBalance).Where(e => e.EmployeeId == id).FirstOrDefault();
+            return con.Employees.Include(e => e.Department).Include(e=> e.User).Where(e => e.EmployeeId == id).FirstOrDefault();
         }
 
         public Employee GetEmployeeByUserId(int id)
         {
 
-            return con.Employees.Include(e => e.Department).Include(e => e.User).Include(e => e.LeaveBalance).Include(e => e.Attendances).Where(e => e.UserId == id).FirstOrDefault();
+            return con.Employees.Include(e => e.Department).Include(e => e.User).Include(e => e.Attendances).Where(e => e.UserId == id).FirstOrDefault();
         }
         
         public Employee GetAnotherExistingByPhoneNumber(int id , string phone)

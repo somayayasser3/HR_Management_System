@@ -48,7 +48,7 @@ namespace HrManagementSystem.Controllers
             DateTime start = request.StartDate.ToDateTime(TimeOnly.MinValue);
             DateTime end = request.EndDate.ToDateTime(TimeOnly.MinValue);
             DateTime today = DateTime.Today;
-            //  if Entered Past Date
+
             if (start < today || end < today || request.EndDate < request.StartDate)
             {
                 return BadRequest(new { message = "You cannot request leave for a past date." });
@@ -59,26 +59,15 @@ namespace HrManagementSystem.Controllers
                 return BadRequest(new { message = "You have pending leave request" });
             }
             var days = (request.EndDate.ToDateTime(TimeOnly.MinValue) - request.StartDate.ToDateTime(TimeOnly.MinValue)).Days +1;
-            // if Enter days more than leave balance
-            switch (leaveType.Name.ToLower())
-            {
-                case "annual":
-                     if ( emp.LeaveBalance.AnnualLeaveBalance < days)
-                    {
-                        request.Status = "Rejected";
-                        return BadRequest(new { message = "Insufficient annual leave balance", Status = request.Status });
-                    }
-                    break;
-                case "sick":
-                    if (emp.LeaveBalance.SickLeaveBalance < days)
-                    {
-                        request.Status = "Rejected";
-                        return BadRequest(new { message = "Insufficient sick leave balance", Status = request.Status });
-                    }
-                    break;
-                case "unpaid":
-                    break;
-            }
+            int daysForThatTypeBefore = unit.LeaveRepo.LeaveRequestTypeApprovedCountForEmployee(Req.EmployeeId,Req.LeaveTypeId);
+            
+            if(daysForThatTypeBefore>=leaveType.MaxDaysPerYear)
+                return BadRequest(new { message = "You have took all allowed days of this leave this year" });
+            
+            
+            if (daysForThatTypeBefore + days > leaveType.MaxDaysPerYear)
+                return BadRequest(new { message = $"You can only take {leaveType.MaxDaysPerYear - daysForThatTypeBefore } day(s) leave" });
+            request.RequestDaysCount = days;            
             try
             {
             unit.LeaveRepo.Add(request);
@@ -103,37 +92,6 @@ namespace HrManagementSystem.Controllers
             if (request.Status == "Pending")
             {
                 request.Status = Status;
-
-                if (request.Status.ToLower() == "approved")
-                {
-                    var days = (request.EndDate.ToDateTime(TimeOnly.MinValue) - request.StartDate.ToDateTime(TimeOnly.MinValue)).Days +1 ;
-                    var employeeLeaveBalance = unit.EmployeeLeaveBalanceRepo.EmpBalanceByID(request.EmployeeId);
-                    var leaveReq = unit.LeaveRepo.GetRequestByID(request.Id);
-
-                    switch (leaveReq.LeaveType.Name.ToLower())
-                    {
-                        case "annual":
-                            employeeLeaveBalance.AnnualLeaveBalance -= days;
-                            break;
-                        case "sick":
-                            employeeLeaveBalance.SickLeaveBalance -= days;
-                            break;
-                        case "unpaid":
-                            employeeLeaveBalance.UnpaidLeaveBalance += days;
-                            break;
-                    }
-                    try
-                    {
-                    unit.EmployeeLeaveBalanceRepo.Update(employeeLeaveBalance);
-                    }
-                    catch (Exception)
-                    {
-                        return BadRequest(new { message = "Try again" });
-                    }
-
-                }
-
-
                 try
                 {
 

@@ -427,18 +427,18 @@ namespace HrManagementSystem.Controllers
                         }
                         break;
 
-                    case "leave_balance":
-                        if (employeeId > 0)
-                        {
-                            var emp = unit.EmployeeRepo.GetEmployeeWithDeptBYID(employeeId);
-                            data["leave_balance"] = new
-                            {
-                                Annual = emp?.LeaveBalance?.AnnualLeaveBalance ?? 0,
-                                Sick = emp?.LeaveBalance?.SickLeaveBalance ?? 0,
-                                Unpaid = emp?.LeaveBalance?.UnpaidLeaveBalance ?? 0
-                            };
-                        }
-                        break;
+                    //case "leave_balance":
+                    //    if (employeeId > 0)
+                    //    {
+                    //        var emp = unit.EmployeeRepo.GetEmployeeWithDeptBYID(employeeId);
+                    //        data["leave_balance"] = new
+                    //        {
+                    //            Annual = emp?.LeaveBalance?.AnnualLeaveBalance ?? 0,
+                    //            Sick = emp?.LeaveBalance?.SickLeaveBalance ?? 0,
+                    //            Unpaid = emp?.LeaveBalance?.UnpaidLeaveBalance ?? 0
+                    //        };
+                    //    }
+                    //    break;
 
                     case "attendances":
                         if (isAdmin || isHr)

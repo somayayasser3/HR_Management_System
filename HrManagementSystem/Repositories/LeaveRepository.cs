@@ -12,9 +12,7 @@ namespace HrManagementSystem.Repositories
         public List<LeaveRequest> GetAllRequests()
         {
             return con.LeaveRequests
-                .Include(l => l.Employee).Include(l=> l.Employee.LeaveBalance)
-                .Include(l => l.LeaveType)
-                .ToList();
+                .Include(l => l.Employee).Include(l => l.LeaveType).ToList();
         }
 
         public List<LeaveType> GetAllTypes()
@@ -40,5 +38,9 @@ namespace HrManagementSystem.Repositories
             return x > 0;
         }
 
+        public int LeaveRequestTypeApprovedCountForEmployee(int id,int leaveID)
+        {
+            return con.LeaveRequests.Where(r => r.EmployeeId == id && r.Status == "approved" && r.LeaveTypeId == leaveID ).Sum(r => r.RequestDaysCount);
+        }
     }
 }

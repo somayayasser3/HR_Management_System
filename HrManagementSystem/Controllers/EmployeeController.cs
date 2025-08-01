@@ -169,16 +169,16 @@ namespace HrManagementSystem.Controllers
             }
 
 
-            var leaveBalance = new EmployeeLeaveBalance
-            {
-                EmployeeId = MappedEmployee.EmployeeId,
-                AnnualLeaveBalance = 21,
-                SickLeaveBalance = 15,
-                UnpaidLeaveBalance = 0
-            };
+            //var leaveBalance = new EmployeeLeaveBalance
+            //{
+            //    EmployeeId = MappedEmployee.EmployeeId,
+            //    AnnualLeaveBalance = 21,
+            //    SickLeaveBalance = 15,
+            //    UnpaidLeaveBalance = 0
+            //};
             try
             {
-                unit.EmployeeLeaveBalanceRepo.Add(leaveBalance);
+                //unit.EmployeeLeaveBalanceRepo.Add(leaveBalance);
                 unit.Save();
                 return Ok(new { message = "Employee Added Successfully" });
             }

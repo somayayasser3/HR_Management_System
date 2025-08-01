@@ -54,7 +54,7 @@ namespace HrManagementSystem.Models
 
         public string ImagePath { get; set; }
 
-        public EmployeeLeaveBalance LeaveBalance { get; set; }
+        //public EmployeeLeaveBalance LeaveBalance { get; set; }
 
         public virtual ICollection<Attendance> Attendances { get; set; }
     }

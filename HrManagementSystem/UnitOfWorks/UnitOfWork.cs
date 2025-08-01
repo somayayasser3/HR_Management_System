@@ -17,8 +17,9 @@ namespace HrManagementSystem.UnitOfWorks
         SystemSettingRepository systemSettingRepo;
         UserGroupRepository userGroupRepo;
         LeaveRepository leaveRepo;
-        EmployeeLeaveBalanceRepository employeeLeaveBalanceRepo;
+        //EmployeeLeaveBalanceRepository employeeLeaveBalanceRepo;
         ChatRepository chatRepo;
+        LeaveTypeRepository leaveTypeRepo;
         public UnitOfWork(HRContext context)
         {
             con = context;
@@ -28,12 +29,19 @@ namespace HrManagementSystem.UnitOfWorks
             get
             {
                 if (chatRepo == null)
-
                     chatRepo = new ChatRepository(con);
                 return chatRepo;
             }
         }
-
+        public LeaveTypeRepository LeaveTypeRepo 
+        { 
+        get
+            {
+                if(leaveTypeRepo==null) 
+                    leaveTypeRepo = new LeaveTypeRepository(con);
+                return leaveTypeRepo;
+            }
+        }
         public virtual AttendanceRepository AttendanceRepo
         {
             get
@@ -64,15 +72,15 @@ namespace HrManagementSystem.UnitOfWorks
                 return leaveRepo;
             }
         }
-        public virtual EmployeeLeaveBalanceRepository EmployeeLeaveBalanceRepo
-        {
-            get
-            {
-                if (employeeLeaveBalanceRepo == null)
-                    employeeLeaveBalanceRepo = new EmployeeLeaveBalanceRepository(con);
-                return employeeLeaveBalanceRepo;
-            }
-        }
+        //public virtual EmployeeLeaveBalanceRepository EmployeeLeaveBalanceRepo
+        //{
+        //    get
+        //    {
+        //        if (employeeLeaveBalanceRepo == null)
+        //            employeeLeaveBalanceRepo = new EmployeeLeaveBalanceRepository(con);
+        //        return employeeLeaveBalanceRepo;
+        //    }
+        //}
 
         public virtual EmployeeRepository EmployeeRepo
         {
